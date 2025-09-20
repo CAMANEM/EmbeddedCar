@@ -1,39 +1,113 @@
+# Python compilation files
 *.pyc
 *.pyo
+
+# Patch files in root
 /*.patch
+
+# Repository metadata
 /.repo/
+
+# Build directories
 /build*/
+/Embedded/build*/
+
+# Python shell tables
 pyshtables.py
+
+# Package stage directory
 pstage/
+/Embedded/pstage/
+
+# Git proxy script
 scripts/oe-git-proxy-socks
+/Embedded/scripts/oe-git-proxy-socks
+
+# Sources directory
 sources/
+/Embedded/sources/
+
+# Meta layers (ignore all except specific ones)
 meta-*/
+/Embedded/meta-*/
 buildtools/
+/Embedded/buildtools/
+
+# Keep specific meta layers
 !meta-skeleton
 !meta-selftest
-hob-image-*.bb
-*.swp
-*.orig
-*.rej
-*~
 !meta-poky
 !meta-yocto
 !meta-yocto-bsp
 !meta-yocto-imported
+!/Embedded/meta-skeleton
+!/Embedded/meta-selftest
+!/Embedded/meta-poky
+!/Embedded/meta-yocto
+!/Embedded/meta-yocto-bsp
+!/Embedded/meta-yocto-imported
+
+# Image build files
+hob-image-*.bb
+
+# Editor temporary files
+*.swp
+*.orig
+*.rej
+*~
+
+# Documentation build files
 /documentation/*/eclipse/
 /documentation/*/*.html
 /documentation/*/*.pdf
 /documentation/*/*.tgz
+/Embedded/documentation/*/eclipse/
+/Embedded/documentation/*/*.html
+/Embedded/documentation/*/*.pdf
+/Embedded/documentation/*/*.tgz
+
+# Bitbake documentation
 /bitbake/doc/bitbake-user-manual/bitbake-user-manual.html
 /bitbake/doc/bitbake-user-manual/bitbake-user-manual.pdf
 /bitbake/doc/bitbake-user-manual/bitbake-user-manual.tgz
+/Embedded/bitbake/doc/bitbake-user-manual/bitbake-user-manual.html
+/Embedded/bitbake/doc/bitbake-user-manual/bitbake-user-manual.pdf
+/Embedded/bitbake/doc/bitbake-user-manual/bitbake-user-manual.tgz
+
+# Pull request directories
 pull-*/
+
+# Toaster files
 bitbake/lib/toaster/contrib/tts/backlog.txt
 bitbake/lib/toaster/contrib/tts/log/*
 bitbake/lib/toaster/contrib/tts/.cache/*
+/Embedded/bitbake/lib/toaster/contrib/tts/backlog.txt
+/Embedded/bitbake/lib/toaster/contrib/tts/log/*
+/Embedded/bitbake/lib/toaster/contrib/tts/.cache/*
+
+# Bitbake test files
 bitbake/lib/bb/tests/runqueue-tests/bitbake-cookerdaemon.log
+/Embedded/bitbake/lib/bb/tests/runqueue-tests/bitbake-cookerdaemon.log
+
+# Clone directories
 _toaster_clones/
+/Embedded/_toaster_clones/
+
+# Download and cache directories
 downloads/
 sstate-cache/
+/Embedded/downloads/
+/Embedded/sstate-cache/
+
+# Database files
 toaster.sqlite
+/Embedded/toaster.sqlite
+
+# VS Code settings
 .vscode/
+
+# Web development (future)
+/Web/node_modules/
+/Web/dist/
+/Web/.env
+/Web/build/
