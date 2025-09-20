@@ -11,6 +11,8 @@
 # Build directories
 /build*/
 /Embedded/build*/
+/Embedded/rpi4/build*/
+
 
 # Python shell tables
 pyshtables.py
@@ -40,12 +42,14 @@ buildtools/
 !meta-yocto
 !meta-yocto-bsp
 !meta-yocto-imported
+!meta-raspberrypi
 !/Embedded/meta-skeleton
 !/Embedded/meta-selftest
 !/Embedded/meta-poky
 !/Embedded/meta-yocto
 !/Embedded/meta-yocto-bsp
 !/Embedded/meta-yocto-imported
+!/Embedded/meta-raspberrypi
 
 # Image build files
 hob-image-*.bb
