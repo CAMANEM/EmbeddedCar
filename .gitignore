@@ -12,6 +12,10 @@
 /build*/
 /Embedded/build*/
 /Embedded/rpi4/build*/
+/Embedded/rpi4/cache/*
+/Embedded/rpi4/tmp/*
+/Embedded/rpi4/sstate-cache/*
+/Embedded/rpi4/bitbake-cookerdaemon.log
 
 
 # Python shell tables
@@ -50,6 +54,7 @@ buildtools/
 !/Embedded/meta-yocto-bsp
 !/Embedded/meta-yocto-imported
 !/Embedded/meta-raspberrypi
+!/Embedded/meta-embeddedcar
 
 # Image build files
 hob-image-*.bb
@@ -115,3 +120,4 @@ toaster.sqlite
 /Web/dist/
 /Web/.env
 /Web/build/
+Embedded/rpi4/bitbake-cookerdaemon.log

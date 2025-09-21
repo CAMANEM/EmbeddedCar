@@ -1,0 +1,4 @@
+define KFEATURE_DESCRIPTION "Enable WiFi support for Broadcom chips"
+define KFEATURE_COMPATIBILITY all
+
+kconf hardware wifi.cfg
