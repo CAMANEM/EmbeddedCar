@@ -16,6 +16,7 @@
 /Embedded/rpi4/tmp/*
 /Embedded/rpi4/sstate-cache/*
 /Embedded/rpi4/bitbake-cookerdaemon.log
+/GPIO_library/build*/
 
 
 # Python shell tables

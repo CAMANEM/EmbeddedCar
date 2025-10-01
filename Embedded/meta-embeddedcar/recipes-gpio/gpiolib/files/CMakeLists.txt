@@ -12,8 +12,8 @@ add_executable (gpio_controller gpio_controller.c)
 target_link_libraries(gpio_controller gpiolib)
 #install the binary
 install (TARGETS gpio_controller DESTINATION bin)
-#install the README file (add readme to .tar)
-install (FILES README.md DESTINATION .)
+#install the README file (add readme to .tar) - commented out for now
+#install (FILES README.md DESTINATION .)
 #package source generation
 set(MAJOR "0")
 set(MINOR "1")

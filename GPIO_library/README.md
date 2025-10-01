@@ -1,6 +1,7 @@
 # Biblioteca GPIO para Raspberry Pi usando raspi-gpio
 
-Esta biblioteca proporciona una interfaz simple en C para controlar los pines GPIO de la Raspberry Pi usando la herramienta `raspi-gpio`.
+Este directorio se utiliza principalmente para pruebas, compilando manual y unicamente las bilbiotecas y copiandolas a la microSD. 
+La imagen de yocto ya compila e instala las bibliotecas automaticamente en la imagen.
 
 ## Estructura del Proyecto
 
@@ -82,7 +83,7 @@ Para realizar la instalación se debe copiar el directorio usr donde se realizó
 El comando para copiar archivo a la microSD de rpi que ya tiene la imagen cargada sería en siguiente (modificar el path segun su sistema):
 
 ```bash
- sudo cp -r "/home/camanem/EmbeddedCar/GPIO_library/build/usr/build/usr_gpiolib" /media/camanem/root/ 
+sudo cp -r "/home/camanem/EmbeddedCar/GPIO_library/build/usr_gpiolib" /media/camanem/root/ 
 ```
 
 Ahora se debe insertar la microSD en la rpi, encenderla y correr el siguiente comando en la rpi para dar a acceso a la biblioteca dinámica:
