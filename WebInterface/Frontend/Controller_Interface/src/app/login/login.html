@@ -1,0 +1,24 @@
+<div class="login-bg">
+  <div class="login-card">
+    <h2>Login</h2>
+    <form (submit)="onLogin($event)">
+      <div class="input-group">
+        <span class="icon">👤</span>
+        <input id="username" name="username" type="text" placeholder="Username" required>
+      </div>
+      <div class="input-group">
+        <span class="icon">🔒</span>
+        <input id="password" name="password" type="password" placeholder="Password" required>
+      </div>
+      <div class="options">
+        <label><input type="checkbox" name="remember"> Remember me</label>
+        <a href="#" class="forgot">Forgot password?</a>
+      </div>
+      <button type="submit" class="login-btn">Login</button>
+      <div class="create-account">
+        <a href="#">Create Account</a>
+      </div>
+      <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
+    </form>
+  </div>
+</div>

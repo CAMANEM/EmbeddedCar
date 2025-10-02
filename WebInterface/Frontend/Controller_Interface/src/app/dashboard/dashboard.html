@@ -1,0 +1,166 @@
+
+<!-- Barra superior -->
+<nav style="width: 100%; background: #1565c0; color: white; padding: 1.5rem 2rem 1rem 2rem; display: flex; align-items: center; border-top-left-radius: 24px; border-top-right-radius: 24px; box-shadow: 0 2px 8px #0001; position: relative;">
+	<div style="font-weight: bold; font-size: 2rem; letter-spacing: 1px;">Proyecto Auto Control Remoto</div>
+		<div style="margin-left: 60rem; font-size: 1.1rem; background: #43a047; padding: 0.6rem 1.5rem; border-radius: 16px; color: #fff; font-weight: 500; box-shadow: 0 4px 10px #0002;">Usuario: admin</div>
+	<div style="position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%); border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;"></div>
+</nav>
+
+<div style="display: flex; height: calc(100vh - 80px); min-height: 0;">
+	<!-- Menú lateral -->
+		<aside style="width: 250px; background: #1976d2; color: #fff; padding: 2rem 1.5rem; border-top-left-radius: 24px; border-bottom-left-radius: 24px; box-shadow: 2px 0 12px #0001; display: flex; flex-direction: column; align-items: flex-start; height: 100%; min-height: 0;">
+		<div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 2rem; letter-spacing: 1px;">Menú</div>
+		<ul style="list-style: none; padding: 0; width: 100%;">
+			<li style="margin-bottom: 1.2rem;"><a href="#" style="display: flex; align-items: center; text-decoration: none; color: #fff; font-size: 1.1rem; border-radius: 12px; padding: 0.7rem 1rem; transition: background 0.2s; background: #2196f3;">Control Manual</a></li>
+			<li style="margin-bottom: 1.2rem;"><a href="#" style="display: flex; align-items: center; text-decoration: none; color: #fff; font-size: 1.1rem; border-radius: 12px; padding: 0.7rem 1rem; transition: background 0.2s;">Sensores</a></li>
+			<li style="margin-bottom: 1.2rem;"><a href="#" style="display: flex; align-items: center; text-decoration: none; color: #fff; font-size: 1.1rem; border-radius: 12px; padding: 0.7rem 1rem; transition: background 0.2s;">Cámaras</a></li>
+			<li style="margin-bottom: 1.2rem;"><a href="#" style="display: flex; align-items: center; text-decoration: none; color: #fff; font-size: 1.1rem; border-radius: 12px; padding: 0.7rem 1rem; transition: background 0.2s;">Configuración</a></li>
+			<li><a href="#" style="display: flex; align-items: center; text-decoration: none; color: #fff; font-size: 1.1rem; border-radius: 12px; padding: 0.7rem 1rem; transition: background 0.2s; background: #795548;">Cerrar Sesión</a></li>
+		</ul>
+		
+
+	</aside>
+	<!-- Panel central y control visual -->
+		<main style="flex: 1; padding: 2rem; display: flex; justify-content: space-between; align-items: flex-start; height: 100%; min-height: 0; overflow: auto;">
+		<div style="flex: 1;"><!--  contenido central del dashboard --></div>
+		<!-- Control visual a la derecha -->
+		<div style="width: 420px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+			<!-- Contenedor principal -->
+			<div class="dpad-wrapper">
+				<div class="dpad-outer-circle">
+					<div class="dpad-inner-circle">
+						<div class="dpad-cross">
+							<button class="dpad-btn dpad-up"></button>
+							<button class="dpad-btn dpad-left"></button>
+							<button class="dpad-btn dpad-center"></button>
+							<button class="dpad-btn dpad-right"></button>
+							<button class="dpad-btn dpad-down"></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+</div>
+<style>
+			.dpad-wrapper {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 340px;
+			}
+            /* Circulo azul 
+			.dpad-outer-circle {
+				width: 200px;
+				height: 200px;
+				border-radius: 50%;
+				background: #5397f7;
+				box-shadow: 0 4px 16px #0002;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				position: relative;   
+			}
+			.dpad-inner-circle {
+				width: 170px;
+				height: 170px;
+				border-radius: 50%;
+				background: #f39c5b;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				position: relative;
+			} 
+			.dpad-inner-circle {
+				width: 180px;
+				height: 180px;
+				border-radius: 50%;
+				background: #f39c5b;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				position: relative;
+			} */
+			.dpad-cross {
+				position: relative;
+				width: 168px;
+				height: 168px;
+				display: grid;
+				grid-template-columns: 56px 56px 56px;
+				grid-template-rows: 56px 56px 56px;
+				gap: 10px;
+				justify-items: center;
+				align-items: center;
+			}
+			.dpad-btn {
+				width: 56px;
+				height: 56px;
+				background: linear-gradient(135deg, #e3f2fd 60%, #b2dfdb 100%);
+				border: none;
+				border-radius: 14px;
+				box-shadow: 0 2px 8px #0001, 0 1.5px 0 #43a047 inset;
+				position: relative;
+				outline: none;
+				cursor: pointer;
+				transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+				padding: 0;
+				font-size: 1.3rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			.dpad-btn:hover {
+				background: linear-gradient(135deg, #b2dfdb 60%, #e3f2fd 100%);
+				box-shadow: 0 4px 16px #43a04733, 0 1.5px 0 #43a047 inset;
+			}
+			.dpad-btn:active,
+			.dpad-btn:focus {
+				background: #43a047;
+				color: #fff;
+				box-shadow: 0 1px 2px #8884;
+				transform: scale(0.95);
+			}
+			.dpad-center {
+				grid-column: 2;
+				grid-row: 2;
+				border-radius: 50%;
+				background: linear-gradient(135deg, #bcaaa4 60%, #fff 100%);
+				border: 2.5px solid #43a047;
+				box-shadow: 0 1px 4px #8882 inset;
+			}
+			.dpad-up    { grid-column: 2; grid-row: 1; }
+			.dpad-down  { grid-column: 2; grid-row: 3; }
+			.dpad-left  { grid-column: 1; grid-row: 2; }
+			.dpad-right { grid-column: 3; grid-row: 2; }
+
+			.dpad-up::before,
+			.dpad-down::before,
+			.dpad-left::before,
+			.dpad-right::before {
+				content: '';
+				display: block;
+				width: 0; height: 0;
+				margin: auto;
+				border-style: solid;
+				position: absolute;
+				top: 50%; left: 50%;
+				transform: translate(-50%, -50%);
+			}
+
+			.dpad-up::before {
+				border-width: 0 9px 15px 9px;
+				border-color: transparent transparent #ffb66b transparent;
+			}
+			.dpad-down::before {
+				border-width: 15px 9px 0 9px;
+				border-color: #ffb66b transparent transparent transparent;
+			}
+			.dpad-left::before {
+				border-width: 9px 15px 9px 0;
+				border-color: transparent #ffb66b transparent transparent;
+			}
+			.dpad-right::before {
+				border-width: 9px 0 9px 15px;
+				border-color: transparent transparent transparent #ffb66b;
+			}
+					</style>
