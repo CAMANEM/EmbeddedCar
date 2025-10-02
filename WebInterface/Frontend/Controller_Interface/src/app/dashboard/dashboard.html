@@ -20,11 +20,11 @@
 		
 
 	</aside>
-	<!-- Panel central y control visual -->
-		<main style="flex: 1; padding: 2rem; display: flex; justify-content: space-between; align-items: flex-start; height: 100%; min-height: 0; overflow: auto;">
+	<!-- Panel central -->
+		<main style="flex: 1; padding: 2rem; display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: auto;">
 		<div style="flex: 1;"><!--  contenido central del dashboard --></div>
-		<!-- Control visual a la derecha -->
-		<div style="width: 420px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+		<!-- Control visual en el centro -->
+		<div style="width: 100%; display: flex; justify-content: flex-end; align-items: center; padding-right: 3rem; position: absolute; top: 50%; right: 0; transform: translateY(-50%);">
 			<!-- Contenedor principal -->
 			<div class="dpad-wrapper">
 				<div class="dpad-outer-circle">
@@ -47,7 +47,8 @@
 				display: flex;
 				justify-content: center;
 				align-items: center;
-				min-height: 340px;
+				min-height: 280px;
+				margin-bottom: 20px;
 			}
             /* Circulo azul 
 			.dpad-outer-circle {
@@ -83,50 +84,77 @@
 			} */
 			.dpad-cross {
 				position: relative;
-				width: 168px;
-				height: 168px;
+				width: 240px;
+				height: 240px;
 				display: grid;
-				grid-template-columns: 56px 56px 56px;
-				grid-template-rows: 56px 56px 56px;
-				gap: 10px;
+				grid-template-columns: 80px 80px 80px;
+				grid-template-rows: 80px 80px 80px;
 				justify-items: center;
 				align-items: center;
+				background: #4A90E2;
+				border-radius: 40px;
+				padding: 15px;
+				box-shadow: 0 12px 32px rgba(74, 144, 226, 0.4), 0 6px 12px rgba(0, 0, 0, 0.1);
 			}
 			.dpad-btn {
-				width: 56px;
-				height: 56px;
-				background: linear-gradient(135deg, #e3f2fd 60%, #b2dfdb 100%);
-				border: none;
-				border-radius: 14px;
-				box-shadow: 0 2px 8px #0001, 0 1.5px 0 #43a047 inset;
+				width: 70px;
+				height: 70px;
+				background: #5BA3F5;
+				border: 3px solid #70B3F7;
+				border-radius: 16px;
+				box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 				position: relative;
 				outline: none;
 				cursor: pointer;
-				transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+				transition: all 0.15s ease;
 				padding: 0;
-				font-size: 1.3rem;
+				font-size: 1.5rem;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 			}
 			.dpad-btn:hover {
-				background: linear-gradient(135deg, #b2dfdb 60%, #e3f2fd 100%);
-				box-shadow: 0 4px 16px #43a04733, 0 1.5px 0 #43a047 inset;
+				background: #7BC2F8;
+				border-color: #8BCFFA;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+				transform: translateY(-2px);
 			}
 			.dpad-btn:active,
 			.dpad-btn:focus {
-				background: #43a047;
+				background: #4A90E2;
+				border-color: #5BA3F5;
 				color: #fff;
-				box-shadow: 0 1px 2px #8884;
-				transform: scale(0.95);
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) inset;
+				transform: scale(0.95) translateY(0px);
 			}
 			.dpad-center {
 				grid-column: 2;
 				grid-row: 2;
 				border-radius: 50%;
-				background: linear-gradient(135deg, #bcaaa4 60%, #fff 100%);
-				border: 2.5px solid #43a047;
-				box-shadow: 0 1px 4px #8882 inset;
+				background: #5BA3F5;
+				border: 2px solid #70B3F7;
+				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+				color: white;
+				font-weight: bold;
+				font-size: 1rem;
+			}
+			.dpad-center::after {
+				content: 'OK';
+				color: white;
+				font-size: 1.1rem;
+				font-weight: bold;
+			}
+			.dpad-center:hover {
+				background: #7BC2F8;
+				border-color: #8BCFFA;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+				transform: translateY(-2px);
+			}
+			.dpad-center:active {
+				background: #4A90E2;
+				border-color: #5BA3F5;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) inset;
+				transform: scale(0.95);
 			}
 			.dpad-up    { grid-column: 2; grid-row: 1; }
 			.dpad-down  { grid-column: 2; grid-row: 3; }
@@ -148,19 +176,19 @@
 			}
 
 			.dpad-up::before {
-				border-width: 0 9px 15px 9px;
-				border-color: transparent transparent #ffb66b transparent;
+				border-width: 0 12px 20px 12px;
+				border-color: transparent transparent white transparent;
 			}
 			.dpad-down::before {
-				border-width: 15px 9px 0 9px;
-				border-color: #ffb66b transparent transparent transparent;
+				border-width: 20px 12px 0 12px;
+				border-color: white transparent transparent transparent;
 			}
 			.dpad-left::before {
-				border-width: 9px 15px 9px 0;
-				border-color: transparent #ffb66b transparent transparent;
+				border-width: 12px 20px 12px 0;
+				border-color: transparent white transparent transparent;
 			}
 			.dpad-right::before {
-				border-width: 9px 0 9px 15px;
-				border-color: transparent transparent transparent #ffb66b;
+				border-width: 12px 0 12px 20px;
+				border-color: transparent transparent transparent white;
 			}
 					</style>
