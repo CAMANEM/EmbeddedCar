@@ -1,5 +1,55 @@
 
-/* Menu lateral*/
+/* Panel indicadores del estado*/
+
+.status-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #4A90E2 0%, #64B5F6 100%);
+  border-radius: 20px;
+  padding: 1rem 2rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 8px 24px rgba(74, 144, 226, 0.3), 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 1.5rem;
+  color: white;
+  font-weight: 500;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+  display: inline-block;
+  min-width: 1.8rem;
+  text-align: center;
+}
+
+.status-text {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.status-divider {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+
+.status-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(74, 144, 226, 0.4), 0 6px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* Menu lateral */
 .menu-item {
   display: flex;
   align-items: center;

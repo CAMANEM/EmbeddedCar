@@ -13,6 +13,11 @@ export class Dashboard {
   
   speedValue: number = 50;
   activeTab: string = 'manual'; // Pestaña activa por defecto
+  
+  // Indicadores de estado
+  currentDirection: string = 'Detenido';
+  currentDirectionIcon: string = '🛑';
+  vehicleStatus: string = 'Detenido';
 
   constructor(private router: Router) {}
 
@@ -58,26 +63,38 @@ export class Dashboard {
   // Funciones para el control direccional
   moveForward() {
     console.log(`Moviendo hacia adelante a velocidad: ${this.speedValue}%`);
+    this.updateVehicleStatus('Adelante', '⬆️', 'Moviendo');
     // Lógica para mover el carro hacia adelante
   }
 
   moveBackward() {
     console.log(`Moviendo hacia atrás a velocidad: ${this.speedValue}%`);
+    this.updateVehicleStatus('Atrás', '⬇️', 'Moviendo');
     // Lógica para mover el carro hacia atrás
   }
 
   moveLeft() {
     console.log(`Girando a la izquierda a velocidad: ${this.speedValue}%`);
+    this.updateVehicleStatus('Izquierda', '⬅️', 'Girando');
     // Lógica para girar el carro a la izquierda
   }
 
   moveRight() {
     console.log(`Girando a la derecha a velocidad: ${this.speedValue}%`);
+    this.updateVehicleStatus('Derecha', '➡️', 'Girando');
     // Lógica para girar el carro a la derecha
   }
 
   stopCar() {
     console.log('Deteniendo el carro');
+    this.updateVehicleStatus('Detenido', '🛑', 'Detenido');
     // Lógica para detener el carro
+  }
+
+  // Método para actualizar el estado visual del vehículo
+  updateVehicleStatus(direction: string, icon: string, status: string) {
+    this.currentDirection = direction;
+    this.currentDirectionIcon = icon;
+    this.vehicleStatus = status;
   }
 }
