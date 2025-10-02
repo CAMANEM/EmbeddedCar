@@ -11,184 +11,108 @@
 		<aside style="width: 250px; background: #1976d2; color: #fff; padding: 2rem 1.5rem; border-top-left-radius: 24px; border-bottom-left-radius: 24px; box-shadow: 2px 0 12px #0001; display: flex; flex-direction: column; align-items: flex-start; height: 100%; min-height: 0;">
 		<div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 2rem; letter-spacing: 1px;">Menú</div>
 		<ul style="list-style: none; padding: 0; width: 100%;">
-			<li style="margin-bottom: 1.2rem;"><a href="#" style="display: flex; align-items: center; text-decoration: none; color: #fff; font-size: 1.1rem; border-radius: 12px; padding: 0.7rem 1rem; transition: background 0.2s; background: #2196f3;">Control Manual</a></li>
-			<li style="margin-bottom: 1.2rem;"><a href="#" style="display: flex; align-items: center; text-decoration: none; color: #fff; font-size: 1.1rem; border-radius: 12px; padding: 0.7rem 1rem; transition: background 0.2s;">Sensores</a></li>
-			<li style="margin-bottom: 1.2rem;"><a href="#" style="display: flex; align-items: center; text-decoration: none; color: #fff; font-size: 1.1rem; border-radius: 12px; padding: 0.7rem 1rem; transition: background 0.2s;">Cámaras</a></li>
-			<li style="margin-bottom: 1.2rem;"><a href="#" style="display: flex; align-items: center; text-decoration: none; color: #fff; font-size: 1.1rem; border-radius: 12px; padding: 0.7rem 1rem; transition: background 0.2s;">Configuración</a></li>
-			<li><a href="#" style="display: flex; align-items: center; text-decoration: none; color: #fff; font-size: 1.1rem; border-radius: 12px; padding: 0.7rem 1rem; transition: background 0.2s; background: #795548;">Cerrar Sesión</a></li>
+			<li>
+				<a href="#" (click)="selectTab('manual'); $event.preventDefault()" 
+				   class="menu-item"
+				   [class.active]="isTabActive('manual')">
+				   Control Manual
+				</a>
+			</li>
+			<li>
+				<a href="#" (click)="selectTab('sensors'); $event.preventDefault()" 
+				   class="menu-item"
+				   [class.active]="isTabActive('sensors')">
+				   Sensores
+				</a>
+			</li>
+			<li>
+				<a href="#" (click)="selectTab('cameras'); $event.preventDefault()" 
+				   class="menu-item"
+				   [class.active]="isTabActive('cameras')">
+				   Cámaras
+				</a>
+			</li>
+			<li>
+				<a href="#" (click)="selectTab('config'); $event.preventDefault()" 
+				   class="menu-item"
+				   [class.active]="isTabActive('config')">
+				   Configuración
+				</a>
+			</li>
+			<li>
+				<a href="#" (click)="logout(); $event.preventDefault()" 
+				   class="menu-item logout">
+				   Cerrar Sesión
+				</a>
+			</li>
 		</ul>
 		
 
 	</aside>
 	<!-- Panel central -->
 		<main style="flex: 1; padding: 2rem; display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: auto;">
-		<div style="flex: 1;"><!--  contenido central del dashboard --></div>
-		<!-- Control visual en el centro -->
-		<div style="width: 100%; display: flex; justify-content: flex-end; align-items: center; padding-right: 3rem; position: absolute; top: 50%; right: 0; transform: translateY(-50%);">
-			<!-- Contenedor principal -->
-			<div class="dpad-wrapper">
-				<div class="dpad-outer-circle">
-					<div class="dpad-inner-circle">
-						<div class="dpad-cross">
-							<button class="dpad-btn dpad-up"></button>
-							<button class="dpad-btn dpad-left"></button>
-							<button class="dpad-btn dpad-center"></button>
-							<button class="dpad-btn dpad-right"></button>
-							<button class="dpad-btn dpad-down"></button>
+		
+		<!-- Contenido principal segun sea la pestaña activa -->
+		<div style="flex: 1; display: flex; flex-direction: column;">
+			
+			<!-- Control Manual -->
+			<div *ngIf="isTabActive('manual')" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; min-height: 100%; padding-top: 5rem;">
+				<div style="text-align: center; margin-bottom: 3rem;">
+					<h2 style="color: #1565c0; font-size: 2rem; margin-bottom: 1rem;">Control Manual del Vehículo</h2>
+					<p style="font-size: 1.1rem; color: #666;">Usa los controles para dirigir el vehículo manualmente</p>
+				</div>
+				
+				<!-- Controles centrados horizontalmente -->
+				<div style="display: flex; justify-content: center; align-items: center; gap: 22rem; width: 100%;">
+					
+					<!-- Regulador de Velocidad -->
+					<div class="speed-control-container">
+						<div class="speed-label">Velocidad</div>
+						<div class="speed-slider-container">
+							<input type="range" class="speed-slider" min="0" max="100" [(ngModel)]="speedValue" (input)="onSpeedChange(speedValue)">
+							<div class="speed-display">
+								<span>{{speedValue}}</span>%
+							</div>
+						</div>
+						<div class="speed-indicators">
+							<span class="speed-min">Lento</span>
+							<span class="speed-max">Rápido</span>
+						</div>
+					</div>
+
+					<!-- Contenedor principal del controlador de botones dpad -->
+					<div class="dpad-wrapper">
+						<div class="dpad-outer-circle">
+							<div class="dpad-inner-circle">
+								<div class="dpad-cross">
+									<button class="dpad-btn dpad-up" (click)="moveForward()"></button>
+									<button class="dpad-btn dpad-left" (click)="moveLeft()"></button>
+									<button class="dpad-btn dpad-center" (click)="stopCar()"></button>
+									<button class="dpad-btn dpad-right" (click)="moveRight()"></button>
+									<button class="dpad-btn dpad-down" (click)="moveBackward()"></button>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+
+			<!-- Sensores -->
+			<div *ngIf="isTabActive('sensors')" style="flex: 1;">
+				<!-- Contenido en blanco para sensores -->
+			</div>
+
+			<!-- Cámaras -->
+			<div *ngIf="isTabActive('cameras')" style="flex: 1;">
+				<!-- Contenido en blanco para cámaras -->
+			</div>
+
+			<!-- Configuración -->
+			<div *ngIf="isTabActive('config')" style="flex: 1;">
+				<!-- Contenido en blanco para configuración -->
+			</div>
+
 		</div>
+		
 	</main>
 </div>
-<style>
-			.dpad-wrapper {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				min-height: 280px;
-				margin-bottom: 20px;
-			}
-            /* Circulo azul 
-			.dpad-outer-circle {
-				width: 200px;
-				height: 200px;
-				border-radius: 50%;
-				background: #5397f7;
-				box-shadow: 0 4px 16px #0002;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				position: relative;   
-			}
-			.dpad-inner-circle {
-				width: 170px;
-				height: 170px;
-				border-radius: 50%;
-				background: #f39c5b;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				position: relative;
-			} 
-			.dpad-inner-circle {
-				width: 180px;
-				height: 180px;
-				border-radius: 50%;
-				background: #f39c5b;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				position: relative;
-			} */
-			.dpad-cross {
-				position: relative;
-				width: 240px;
-				height: 240px;
-				display: grid;
-				grid-template-columns: 80px 80px 80px;
-				grid-template-rows: 80px 80px 80px;
-				justify-items: center;
-				align-items: center;
-				background: #4A90E2;
-				border-radius: 40px;
-				padding: 15px;
-				box-shadow: 0 12px 32px rgba(74, 144, 226, 0.4), 0 6px 12px rgba(0, 0, 0, 0.1);
-			}
-			.dpad-btn {
-				width: 70px;
-				height: 70px;
-				background: #5BA3F5;
-				border: 3px solid #70B3F7;
-				border-radius: 16px;
-				box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-				position: relative;
-				outline: none;
-				cursor: pointer;
-				transition: all 0.15s ease;
-				padding: 0;
-				font-size: 1.5rem;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-			.dpad-btn:hover {
-				background: #7BC2F8;
-				border-color: #8BCFFA;
-				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-				transform: translateY(-2px);
-			}
-			.dpad-btn:active,
-			.dpad-btn:focus {
-				background: #4A90E2;
-				border-color: #5BA3F5;
-				color: #fff;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) inset;
-				transform: scale(0.95) translateY(0px);
-			}
-			.dpad-center {
-				grid-column: 2;
-				grid-row: 2;
-				border-radius: 50%;
-				background: #5BA3F5;
-				border: 2px solid #70B3F7;
-				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-				color: white;
-				font-weight: bold;
-				font-size: 1rem;
-			}
-			.dpad-center::after {
-				content: 'OK';
-				color: white;
-				font-size: 1.1rem;
-				font-weight: bold;
-			}
-			.dpad-center:hover {
-				background: #7BC2F8;
-				border-color: #8BCFFA;
-				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-				transform: translateY(-2px);
-			}
-			.dpad-center:active {
-				background: #4A90E2;
-				border-color: #5BA3F5;
-				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) inset;
-				transform: scale(0.95);
-			}
-			.dpad-up    { grid-column: 2; grid-row: 1; }
-			.dpad-down  { grid-column: 2; grid-row: 3; }
-			.dpad-left  { grid-column: 1; grid-row: 2; }
-			.dpad-right { grid-column: 3; grid-row: 2; }
-
-			.dpad-up::before,
-			.dpad-down::before,
-			.dpad-left::before,
-			.dpad-right::before {
-				content: '';
-				display: block;
-				width: 0; height: 0;
-				margin: auto;
-				border-style: solid;
-				position: absolute;
-				top: 50%; left: 50%;
-				transform: translate(-50%, -50%);
-			}
-
-			.dpad-up::before {
-				border-width: 0 12px 20px 12px;
-				border-color: transparent transparent white transparent;
-			}
-			.dpad-down::before {
-				border-width: 20px 12px 0 12px;
-				border-color: white transparent transparent transparent;
-			}
-			.dpad-left::before {
-				border-width: 12px 20px 12px 0;
-				border-color: transparent white transparent transparent;
-			}
-			.dpad-right::before {
-				border-width: 12px 0 12px 20px;
-				border-color: transparent transparent transparent white;
-			}
-					</style>
