@@ -5,7 +5,7 @@ const cors = require('cors');
 // Import routes
 //const endpointRoutes = require('./src/endpoint_route/endpoint');
 const securityRoutes = require('./src/endpoint_security/security');
-//const communicationRoutes = require('./src/endpoint_communication/communication');
+const carRoutes = require('./src/endpoint_car/car');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api', securityRoutes);
+app.use('/api', carRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
