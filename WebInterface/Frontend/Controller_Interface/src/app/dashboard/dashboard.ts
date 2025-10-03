@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subscription, interval } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,14 +13,17 @@ import { Router } from '@angular/router';
 })
 export class Dashboard {
   
+  // UI State
   speedValue: number = 50;
-  activeTab: string = 'manual'; // Pestaña activa por defecto
+  activeTab: string = 'manual';
+  servoAngle: number = 90; // Center position
   
-  // Indicadores de estado
+  
+  // Visual indicators
   currentDirection: string = 'Detenido';
   currentDirectionIcon: string = '🛑';
   vehicleStatus: string = 'Detenido';
-
+  
   constructor(private router: Router) {}
 
   // Método para cambiar de pestaña
@@ -30,15 +35,15 @@ export class Dashboard {
   // Método para cerrar sesión
   logout() {
     console.log('Cerrando sesión...');
-    
+
     // Limpiar datos de sesión 
     localStorage.removeItem('userToken');
     localStorage.removeItem('userData');
     sessionStorage.clear();
-    
+
     // Mostrar mensaje de confirmación
     alert('Sesión cerrada exitosamente');
-    
+
     // Redirigir al login 
     this.router.navigate(['/']).then(() => {
       console.log('Navegación exitosa al login');
@@ -90,11 +95,11 @@ export class Dashboard {
     this.updateVehicleStatus('Detenido', '🛑', 'Detenido');
     // Lógica para detener el carro
   }
-
   // Método para actualizar el estado visual del vehículo
-  updateVehicleStatus(direction: string, icon: string, status: string) {
+  updateVehicleStatus(direction: string, icon: string, vehicleStatus: string) {
     this.currentDirection = direction;
     this.currentDirectionIcon = icon;
-    this.vehicleStatus = status;
+    this.vehicleStatus = vehicleStatus;
   }
 }
+
