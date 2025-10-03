@@ -44,7 +44,7 @@ Last modified by:
 */
 const request_move_forward = (req, res) => {
   try {
-    const { speed } = req.body;
+    const { speed, duration } = req.body;
     
     // Validate inputs
     if (speed && (speed < 0 || speed > 100)) {
@@ -60,6 +60,7 @@ const request_move_forward = (req, res) => {
       status: 'Moving.',
       direction: 'Forward.',
       speed: speed || 50,
+      duration: duration || null,
       timestamp: new Date().toISOString()
     };
 
@@ -86,7 +87,7 @@ Last modified by:
 */
 const requestmove_backwards = (req, res) => {
   try {
-    const { speed } = req.body;
+    const { speed, duration } = req.body;
     
     // Validate inputs
     if (speed && (speed < 0 || speed > 100)) {
@@ -102,6 +103,7 @@ const requestmove_backwards = (req, res) => {
       status: 'Moving.',
       direction: 'Backwards.',
       speed: speed || 50,
+      duration: duration || null,
       timestamp: new Date().toISOString()
     };
 
@@ -159,11 +161,23 @@ Last modified by:
 */
 const request_move_left = (req, res) => {
   try {
+    const { angle, speed } = req.body;
+    
+    // Validate inputs
+    if (angle && (angle < 0 || angle > 90)) {
+      return res.status(400).json({
+        error: 'Invalid angle.',
+        message: 'Turn angle must be between 0 and 90 degrees.'
+      });
+    }
+
     // TODO: Implement actual left turn logic
 
     const response = {
       status: 'Turning.',
       direction: 'Left.',
+      angle: angle || 45,
+      speed: speed || 30,
       timestamp: new Date().toISOString()
     };
 
@@ -190,11 +204,23 @@ Last modified by:
 */
 const request_move_right = (req, res) => {
     try {
+    const { angle, speed } = req.body;
+    
+    // Validate inputs
+    if (angle && (angle < 0 || angle > 90)) {
+      return res.status(400).json({
+        error: 'Invalid angle.',
+        message: 'Turn angle must be between 0 and 90 degrees.'
+      });
+    }
+
     // TODO: Implement actual right turn logic
 
     const response = {
       status: 'Turning.',
       direction: 'Right.',
+      angle: angle || 45,
+      speed: speed || 30,
       timestamp: new Date().toISOString()
     };
 
