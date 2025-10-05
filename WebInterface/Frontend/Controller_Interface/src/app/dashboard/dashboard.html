@@ -1,4 +1,6 @@
-
+<!DOCTYPE html>
+<html lang="es">
+	
 <!-- Barra superior -->
 <nav style="width: 100%; background: #1565c0; color: white; padding: 1.5rem 2rem 1rem 2rem; display: flex; align-items: center; border-top-left-radius: 24px; border-top-right-radius: 24px; box-shadow: 0 2px 8px #0001; position: relative;">
 	<div style="font-weight: bold; font-size: 2rem; letter-spacing: 1px;">Proyecto Auto Control Remoto</div>
@@ -33,6 +35,12 @@
 				</a>
 			</li>
 			<li>
+				<a href="#" (click)="selectTab('fpv'); $event.preventDefault()" 
+				   class="menu-item fpv">
+				   FPV
+				</a>
+			</li>
+			<li>
 				<a href="#" (click)="selectTab('config'); $event.preventDefault()" 
 				   class="menu-item"
 				   [class.active]="isTabActive('config')">
@@ -50,7 +58,7 @@
 
 	</aside>
 	<!-- Panel central -->
-		<main style="flex: 1; padding: 2rem; display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: auto;">
+		<main style="flex: 1; padding: 1rem; display: flex; flex-direction: column; height: 100%; min-height: 0; overflow: auto;">
 		
 		<!-- Contenido principal segun sea la pestaña activa -->
 		<div style="flex: 1; display: flex; flex-direction: column;">
@@ -121,6 +129,97 @@
 			<!-- Cámaras -->
 			<div *ngIf="isTabActive('cameras')" style="flex: 1;">
 				<!-- Contenido en blanco para cámaras -->
+			</div>
+			
+			<!-- FPV -->
+			<div *ngIf="isTabActive('fpv')" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; min-height: 100%; padding-top: 0rem;">
+				<div style="text-align: center; margin-bottom: 1rem;">
+					<h2 style="color: #1565c0; font-size: 1.5rem; margin-bottom: 1rem;">Vista en Primera Persona (FPV)</h2>
+					<p style="font-size: 1rem; color: #666;">Observa el entorno desde la perspectiva del vehículo</p>
+				</div>
+
+				<meta charset="UTF-8">
+    			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				
+				<div class="fpv_container">					
+					<div class="fpv_controls" *ngIf="!streamActive">
+						<h3 class="fpv_h3">🔧 Configuración del Stream</h3>
+						<div class="fpv_control-group">
+							<label class="fpv_label">IP Raspberry Pi:</label>
+							<input class="fpv_input" type="text" id="rpiIp" value="192.168.0.117" placeholder="192.168.0.117">
+						</div>
+						<div class="fpv_control-group">
+							<label class="fpv_label">Puerto:</label>
+							<input class="fpv_input" type="number" id="rpiPort" value="8080" placeholder="8080">
+						</div>
+						<div class="fpv_control-group">
+							<button class="fpv_button" (click)="startStream()">🚀 Iniciar Stream</button>
+							<button class="fpv_button" (click)="stopStream()">⏹️ Detener Stream</button>
+							<button class="fpv_button" (click)="refreshStream()">🔄 Refrescar</button>
+						</div>
+					</div>
+					
+					<div class="fpv_stream-methods">
+						<div class="fpv_method-card" id="gstreamer-card">
+							<h3 class="fpv_h3">🎯 GStreamer TCP Stream</h3>
+							<p class="fpv_p" *ngIf="!streamActive"><strong>Recomendado:</strong> Stream directo via TCP</p>
+							<img id="gstreamer-stream" class="fpv_video-stream" style="display: none;" alt="GStreamer Video Stream">
+							<div class="fpv_status disconnected" id="gstreamer-status">
+								<strong>Estado:</strong> <span id="gstreamer-status-text">Desconectado</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Controles centrados horizontalmente -->
+				<div style="display: flex; justify-content: center; align-items: flex-end; gap: 10rem; width: 100%; height: 100%;">
+									
+					<!-- Regulador de Velocidad -->
+					<div class="fpv_speed-control-container">
+						<div class="fpv_speed-label">Velocidad</div>
+						<div class="fpv_speed-slider-container">
+							<input type="range" class="fpv_speed-slider" min="0" max="100" [(ngModel)]="speedValue" (input)="onSpeedChange(speedValue)">
+							<div class="fpv_speed-display">
+								<span>{{speedValue}}</span>%
+							</div>
+						</div>
+						<div class="fpv_speed-indicators">
+							<span class="fpv_speed-min">Lento</span>
+							<span class="fpv_speed-max">Rápido</span>
+						</div>
+					</div>
+
+					<!-- Panel de Indicadores de Estado -->
+					<div class="fpv_status-panel" style="margin-bottom: 0rem;">
+						<div class="fpv_status-item">
+							<span class="fpv_status-icon">{{currentDirectionIcon}}</span>
+							<span class="fpv_status-text">{{currentDirection}}</span>
+						</div>
+						<div class="fpv_status-divider">|</div>
+						<div class="fpv_status-item">
+							<span class="fpv_status-text">{{speedValue}}% Velocidad</span>
+						</div>
+						<div class="fpv_status-divider">|</div>
+						<div class="fpv_status-item">
+							<span class="fpv_status-text">{{vehicleStatus}}</span>
+						</div>
+					</div>
+
+					<!-- Contenedor principal del controlador de botones dpad -->
+					<div class="fpv_dpad-wrapper">
+						<div class="dpad-outer-circle">
+							<div class="dpad-inner-circle">
+								<div class="fpv_dpad-cross">
+									<button class="fpv_dpad-btn fpv_dpad-up" (click)="moveForward()"></button>
+									<button class="fpv_dpad-btn fpv_dpad-left" (click)="moveLeft()"></button>
+									<button class="fpv_dpad-btn fpv_dpad-center" (click)="stopCar()"></button>
+									<button class="fpv_dpad-btn fpv_dpad-right" (click)="moveRight()"></button>
+									<button class="fpv_dpad-btn fpv_dpad-down" (click)="moveBackward()"></button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<!-- Configuración -->

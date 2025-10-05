@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { MovementService } from '../services/movement.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,7 +12,7 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard {
+export class Dashboard implements AfterViewInit {
   
   // UI State
   speedValue: number = 50;
@@ -24,11 +25,20 @@ export class Dashboard {
   currentDirectionIcon: string = '🛑';
   vehicleStatus: string = 'Detenido';
   
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private movementService: MovementService
+  ) {}
 
   // Método para cambiar de pestaña
   selectTab(tabName: string) {
     this.activeTab = tabName;
+    if(this.activeTab === 'fpv') {
+      this.streamActive = false;
+    } else {
+      this.stopStream();
+    }
+
     console.log(`Pestaña seleccionada: ${tabName}`);
   }
 
@@ -68,38 +78,299 @@ export class Dashboard {
   // Funciones para el control direccional
   moveForward() {
     console.log(`Moviendo hacia adelante a velocidad: ${this.speedValue}%`);
-    this.updateVehicleStatus('Adelante', '⬆️', 'Moviendo');
-    // Lógica para mover el carro hacia adelante
+    this.movementService.moveForward(this.speedValue).subscribe({
+      next: (response) => {
+        if (response.status === 'Moving.') {
+          this.updateVehicleStatus('Adelante', '⬆️', 'Moviendo');
+        }
+        console.log('Movement response:', response);
+      },
+      error: (error) => {
+        console.error('Movement error:', error);
+        this.updateVehicleStatus('Error', '❌', 'Error');
+      }
+    });
   }
 
   moveBackward() {
     console.log(`Moviendo hacia atrás a velocidad: ${this.speedValue}%`);
-    this.updateVehicleStatus('Atrás', '⬇️', 'Moviendo');
-    // Lógica para mover el carro hacia atrás
+    this.movementService.moveBackward(this.speedValue).subscribe({
+      next: (response) => {
+        if (response.status === 'Moving.') {
+          this.updateVehicleStatus('Atrás', '⬇️', 'Moviendo');
+        }
+        console.log('Movement response:', response);
+      },
+      error: (error) => {
+        console.error('Movement error:', error);
+        this.updateVehicleStatus('Error', '❌', 'Error');
+      }
+    });
   }
 
   moveLeft() {
     console.log(`Girando a la izquierda a velocidad: ${this.speedValue}%`);
-    this.updateVehicleStatus('Izquierda', '⬅️', 'Girando');
-    // Lógica para girar el carro a la izquierda
+    this.movementService.moveLeft(45, this.speedValue).subscribe({
+      next: (response) => {
+        if (response.status === 'Turning.') {
+          this.updateVehicleStatus('Izquierda', '⬅️', 'Girando');
+        }
+        console.log('Movement response:', response);
+      },
+      error: (error) => {
+        console.error('Movement error:', error);
+        this.updateVehicleStatus('Error', '❌', 'Error');
+      }
+    });
   }
 
   moveRight() {
     console.log(`Girando a la derecha a velocidad: ${this.speedValue}%`);
-    this.updateVehicleStatus('Derecha', '➡️', 'Girando');
-    // Lógica para girar el carro a la derecha
+    this.movementService.moveRight(45, this.speedValue).subscribe({
+      next: (response) => {
+        if (response.status === 'Turning.') {
+          this.updateVehicleStatus('Derecha', '➡️', 'Girando');
+        }
+        console.log('Movement response:', response);
+      },
+      error: (error) => {
+        console.error('Movement error:', error);
+        this.updateVehicleStatus('Error', '❌', 'Error');
+      }
+    });
   }
 
   stopCar() {
     console.log('Deteniendo el carro');
-    this.updateVehicleStatus('Detenido', '🛑', 'Detenido');
-    // Lógica para detener el carro
+    this.movementService.stopCar().subscribe({
+      next: (response) => {
+        if (response.status === 'Stopped.') {
+          this.updateVehicleStatus('Detenido', '🛑', 'Detenido');
+        }
+        console.log('Movement response:', response);
+      },
+      error: (error) => {
+        console.error('Movement error:', error);
+        this.updateVehicleStatus('Error', '❌', 'Error');
+      }
+    });
   }
   // Método para actualizar el estado visual del vehículo
   updateVehicleStatus(direction: string, icon: string, vehicleStatus: string) {
     this.currentDirection = direction;
     this.currentDirectionIcon = icon;
     this.vehicleStatus = vehicleStatus;
+  }
+
+  // Stream properties
+  currentStreamMethod: string = 'gstreamer';
+  streamActive: boolean = false;
+  refreshInterval: any = null;
+
+  // Stream methods
+  updateUrls(): { gstreamerUrl: string; mjpegUrl: string } {
+    const ipElement = document.getElementById('rpiIp') as HTMLInputElement;
+    const portElement = document.getElementById('rpiPort') as HTMLInputElement;
+    
+    const ip = ipElement?.value || '192.168.0.117';
+    const port = portElement?.value || '8080';
+    
+    const gstreamerUrl = `http://localhost:3000/api/camera/gstreamer-stream?ip=${ip}&port=${port}`;
+    const mjpegUrl = `http://localhost:3000/api/camera/mjpeg-stream?ip=${ip}&port=${port}`;
+    
+    const currentIpElement = document.getElementById('current-ip');
+    const gstreamerUrlElement = document.getElementById('gstreamer-url');
+    
+    if (currentIpElement) currentIpElement.textContent = ip;
+    if (gstreamerUrlElement) gstreamerUrlElement.textContent = gstreamerUrl;
+    
+    return { gstreamerUrl, mjpegUrl };
+  }
+  
+  updateStatus(method: string, status: string, message: string): void {
+    const statusDiv = document.getElementById(`${method}-status`);
+    const statusText = document.getElementById(`${method}-status-text`);
+    const card = document.getElementById(`${method}-card`);
+    
+    if (statusDiv) statusDiv.className = `fpv_status ${status}`;
+    if (statusText) statusText.textContent = message;
+    
+    if (card) {
+      if (status === 'connected') {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    }
+    
+    const lastUpdateElement = document.getElementById('last-update');
+    if (lastUpdateElement) lastUpdateElement.textContent = new Date().toLocaleTimeString();
+  }
+  
+  startStream(): void {
+    console.log('▶️ Starting stream...');
+    if (this.streamActive) {
+      console.log('Stream already active');
+      return;
+    }
+    
+    const urls = this.updateUrls();
+    this.streamActive = true;
+    
+    // Try GStreamer first
+    console.log('🎯 Starting GStreamer stream...');
+    console.log('🔗 GStreamer URL:', urls.gstreamerUrl);
+    
+    const gstreamerImg = document.getElementById('gstreamer-stream') as HTMLImageElement;
+    
+    if (gstreamerImg) {
+      // Set loading status
+      this.updateStatus('gstreamer', 'connecting', 'Conectando...');
+      
+      gstreamerImg.onload = () => {
+        console.log('✅ GStreamer stream connected');
+        this.updateStatus('gstreamer', 'connected', 'Conectado - Recibiendo video');
+        gstreamerImg.style.display = 'block';
+        this.currentStreamMethod = 'gstreamer';
+      };
+      
+      gstreamerImg.onerror = (error) => {
+        console.log('❌ GStreamer failed:', error);
+        console.log('🔍 Trying to fallback to MJPEG...');
+        this.updateStatus('gstreamer', 'disconnected', 'Error de conexión');
+        gstreamerImg.style.display = 'none';
+        
+        // Fallback to MJPEG
+        const mjpegImg = document.getElementById('mjpeg-stream') as HTMLImageElement;
+        
+        if (mjpegImg) {
+          console.log('🔗 MJPEG URL:', urls.mjpegUrl);
+          this.updateStatus('mjpeg', 'connecting', 'Probando MJPEG...');
+          
+          mjpegImg.onload = () => {
+            console.log('✅ MJPEG stream connected');
+            this.updateStatus('mjpeg', 'connected', 'Conectado - Recibiendo video');
+            mjpegImg.style.display = 'block';
+            this.currentStreamMethod = 'mjpeg';
+          };
+          
+          mjpegImg.onerror = (mjpegError) => {
+            console.log('❌ Both streams failed');
+            console.error('MJPEG Error:', mjpegError);
+            this.updateStatus('mjpeg', 'disconnected', 'Error: Raspberry Pi no disponible');
+            mjpegImg.style.display = 'none';
+            this.streamActive = false;
+            
+            // Show user-friendly error message
+            alert('❌ No se pudo conectar al video stream.\n\n' +
+                  '1. Verifica que la Raspberry Pi esté encendida\n' +
+                  '2. Verifica la IP: ' + (document.getElementById('rpiIp') as HTMLInputElement)?.value + '\n' +
+                  '3. Asegúrate de que el stream esté activo en la Raspberry Pi');
+          };
+          
+          mjpegImg.src = urls.mjpegUrl + '&t=' + Date.now();
+        }
+      };
+      
+      // Add timeout for connection attempt
+      setTimeout(() => {
+        if (this.streamActive && !gstreamerImg.complete) {
+          console.log('⏰ Connection timeout, trying fallback');
+          gstreamerImg.onerror?.(new Event('timeout'));
+        }
+      }, 10000); // 10 second timeout
+      
+      gstreamerImg.src = urls.gstreamerUrl + '&t=' + Date.now();
+    }
+    
+    // Start refresh interval
+    if (this.refreshInterval) clearInterval(this.refreshInterval);
+    this.refreshInterval = setInterval(() => this.refreshStream(), 30000); // Refresh every 30 seconds
+  }
+  
+  stopStream(): void {
+    this.streamActive = false;
+    
+    // Hide all streams
+    const gstreamerImg = document.getElementById('gstreamer-stream') as HTMLImageElement;
+    const mjpegImg = document.getElementById('mjpeg-stream') as HTMLImageElement;
+    
+    if (gstreamerImg) gstreamerImg.style.display = 'none';
+    if (mjpegImg) mjpegImg.style.display = 'none';
+    
+    // Update status
+    this.updateStatus('gstreamer', 'disconnected', 'Desconectado');
+    this.updateStatus('mjpeg', 'disconnected', 'Desconectado');
+    
+    // Clear refresh interval
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
+    
+    console.log('⏹️ Stream stopped');
+  }
+  
+  refreshStream(): void {
+    if (!this.streamActive) return;
+    
+    console.log('🔄 Refreshing stream...');
+    
+    const urls = this.updateUrls();
+    const activeImg = document.getElementById(`${this.currentStreamMethod}-stream`) as HTMLImageElement;
+    
+    if (activeImg && activeImg.style.display === 'block') {
+      const newUrl = this.currentStreamMethod === 'gstreamer' ? urls.gstreamerUrl : urls.mjpegUrl;
+      activeImg.src = newUrl + '&t=' + Date.now();
+    }
+  }
+
+  // Test connection to Raspberry Pi
+  testConnection(): void {
+    const ip = (document.getElementById('rpiIp') as HTMLInputElement)?.value || '192.168.0.117';
+    const port = (document.getElementById('rpiPort') as HTMLInputElement)?.value || '8080';
+    
+    console.log(`🔍 Testing connection to ${ip}:${port}`);
+    
+    // Test backend API first
+    fetch(`/api/camera/?`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('✅ Backend API is working:', data);
+        
+        // Now test the specific camera endpoint
+        return fetch(`/api/camera/gstreamer-stream?ip=${ip}&port=${port}&test=true`);
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('✅ Camera endpoint is accessible');
+          alert('✅ Conexión exitosa!\nEl backend puede acceder a la Raspberry Pi.');
+        } else {
+          console.log('❌ Camera endpoint failed:', response.status);
+          alert(`❌ Error de conexión (${response.status})\nVerifica que la Raspberry Pi esté transmitiendo en ${ip}:${port}`);
+        }
+      })
+      .catch(error => {
+        console.error('❌ Connection test failed:', error);
+        alert('❌ Error de conexión\nVerifica que el backend esté ejecutándose y la IP sea correcta.');
+      });
+  }
+
+  // Initialize stream functionality
+  ngAfterViewInit(): void {
+    console.log('🎥 GStreamer Video Interface loaded');
+    this.updateUrls();
+    
+    // Auto-refresh URLs when inputs change
+    const rpiIpElement = document.getElementById('rpiIp');
+    const rpiPortElement = document.getElementById('rpiPort');
+    
+    if (rpiIpElement) {
+      rpiIpElement.addEventListener('input', () => this.updateUrls());
+    }
+    if (rpiPortElement) {
+      rpiPortElement.addEventListener('input', () => this.updateUrls());
+    }
   }
 }
 

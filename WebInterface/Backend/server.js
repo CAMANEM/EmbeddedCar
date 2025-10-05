@@ -6,6 +6,7 @@ const cors = require('cors');
 //const endpointRoutes = require('./src/endpoint_route/endpoint');
 const securityRoutes = require('./src/endpoint_security/security');
 const carRoutes = require('./src/endpoint_car/car');
+const cameraRoutes = require('./src/endpoint_camera/camera');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api', securityRoutes);
 app.use('/api', carRoutes);
+app.use('/api', cameraRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -49,8 +51,25 @@ app.use('*', (req, res) => {
 
 // Start server
 app.listen(PORT, '0.0.0.0',() => {
+  const os = require('os');
+  const networkInterfaces = os.networkInterfaces();
+  
+  // Find the first non-internal IPv4 address
+  let lanIP = 'localhost';
+  for (const interfaceName in networkInterfaces) {
+    const interfaces = networkInterfaces[interfaceName];
+    for (const iface of interfaces) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        lanIP = iface.address;
+        break;
+      }
+    }
+    if (lanIP !== 'localhost') break;
+  }
+  
   console.log(`Server is running on port ${PORT}`);
-  console.log(`Access the API at: http://localhost:${PORT}`);
+  console.log(`Local access: http://localhost:${PORT}`);
+  console.log(`LAN access: http://${lanIP}:${PORT}`);
 });
 
 module.exports = app;
