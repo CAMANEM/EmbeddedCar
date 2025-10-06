@@ -10,6 +10,7 @@ export interface MovementRequest {
 
 export interface MovementResponse {
   status: string;
+  movement?: string;  // Added movement property
   direction?: string;
   speed?: number;
   duration?: number;
@@ -82,6 +83,57 @@ export class MovementService {
           car_id: ''
         }))
       );
+  }
+
+  /**
+   * Update car movement
+   */
+  updateCarMovement(movement: string, speed: number, direction: string): Observable<MovementResponse> {
+    const request = { movement, speed, direction };
+    
+    console.log('🚗 Sending car movement update:', request);
+    
+    return this.http.post<MovementResponse>(`${this.API_BASE_URL}/update_movement`, request, this.httpOptions)
+      .pipe(
+        tap(response => {
+          console.log('✅ Car movement response:', response);
+          
+          if (response.status === 'updated') {
+            this.updateCarStatus({
+              isConnected: true,
+              currentDirection: this.mapDirectionToDisplay(response.direction || direction),
+              currentSpeed: response.speed || speed,
+              vehicleStatus: this.mapMovementToStatus(response.movement || movement),
+              lastUpdate: response.timestamp || new Date().toISOString()
+            });
+          }
+        }),
+        catchError(this.handleError<MovementResponse>('updateCarMovement'))
+      );
+  }
+
+  /**
+   * Map backend direction values to display values
+   */
+  private mapDirectionToDisplay(direction: string): string {
+    const directionMap: { [key: string]: string } = {
+      'none': 'Sin dirección',
+      'left': 'Izquierda',
+      'right': 'Derecha'
+    };
+    return directionMap[direction] || direction;
+  }
+
+  /**
+   * Map backend movement values to status values
+   */
+  private mapMovementToStatus(movement: string): string {
+    const statusMap: { [key: string]: string } = {
+      'none': 'Detenido',
+      'forward': 'Adelante',
+      'backward': 'Atrás'
+    };
+    return statusMap[movement] || 'Moviendo';
   }
 
   /**

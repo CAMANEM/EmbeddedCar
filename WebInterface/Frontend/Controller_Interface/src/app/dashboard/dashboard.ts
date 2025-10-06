@@ -15,9 +15,9 @@ import { MovementService } from '../services/movement.service';
 export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
   
   // UI State
-  speedValue: number = 50;
+  speedValue: number = 0;
   activeTab: string = 'manual';
-  servoAngle: number = 90; // Center position
+  servoAngle: number = 0; // Center position
   
   
   // Visual indicators
@@ -102,88 +102,130 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
   // Funciones para el control direccional
   moveForward() {
     console.log(`Moviendo hacia adelante a velocidad: ${this.speedValue}%`);
-    this.movementService.moveForward(this.speedValue).subscribe({
+
+    this.updateVehicleStatus('Adelante', '⬆️', this.currentDirection, this.currentDirectionIcon, 'Moviendo', 'MovementFunction');
+
+    // Map frontend values to backend values
+    const backendMovement = this.mapMovementToBackend(this.currentMovement);
+    const backendDirection = this.mapDirectionToBackend(this.currentDirection);
+        
+    this.movementService.updateCarMovement(backendMovement, this.speedValue, backendDirection).subscribe({
       next: (response) => {
-        if (response.status === 'Moving.') {
-          this.updateVehicleStatus('Adelante', '⬆️', this.currentDirection, this.currentDirectionIcon, 'Moviendo');
-        }
-        console.log('Movement response:', response);
+        console.log('✅ Movement response:', response);
       },
       error: (error) => {
-        console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error');
+        console.error('❌ Movement error:', error);
+        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error', 'MovementFunction');
       }
     });
   }
 
   moveBackward() {
     console.log(`Moviendo hacia atrás a velocidad: ${this.speedValue}%`);
-    this.movementService.moveBackward(this.speedValue).subscribe({
+    
+    this.updateVehicleStatus('Atrás', '⬇️', this.currentDirection, this.currentDirectionIcon, 'Moviendo', 'MovementFunction');
+
+    // Map frontend values to backend values
+    const backendMovement = this.mapMovementToBackend(this.currentMovement);
+    const backendDirection = this.mapDirectionToBackend(this.currentDirection);
+        
+    this.movementService.updateCarMovement(backendMovement, this.speedValue, backendDirection).subscribe({
       next: (response) => {
-        if (response.status === 'Moving.') {
-          this.updateVehicleStatus('Atrás', '⬇️', this.currentDirection, this.currentDirectionIcon, 'Moviendo');
-        }
-        console.log('Movement response:', response);
+        console.log('✅ Movement response:', response);
       },
       error: (error) => {
-        console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error');
+        console.error('❌ Movement error:', error);
+        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error', 'MovementFunction');
       }
     });
   }
 
   moveLeft() {
     console.log(`Girando a la izquierda a velocidad: ${this.speedValue}%`);
-    this.movementService.moveLeft(45, this.speedValue).subscribe({
+
+    this.updateVehicleStatus(this.currentMovement, this.currentMovementIcon, 'Izquierda', '⬅️', 'Girando', 'DirectionFunction');
+
+    // Map frontend values to backend values
+    const backendMovement = this.mapMovementToBackend(this.currentMovement);
+    const backendDirection = this.mapDirectionToBackend(this.currentDirection);
+      
+    this.movementService.updateCarMovement(backendMovement, this.speedValue, backendDirection).subscribe({
       next: (response) => {
-        if (response.status === 'Turning.') {
-          this.updateVehicleStatus(this.currentMovement, this.currentMovementIcon, 'Izquierda', '⬅️', 'Girando');
-        }
-        console.log('Movement response:', response);
+        console.log('✅ Movement response:', response);
       },
       error: (error) => {
-        console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error');
+        console.error('❌ Movement error:', error);
+        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error', 'DirectionFunction');
       }
     });
   }
 
   moveRight() {
     console.log(`Girando a la derecha a velocidad: ${this.speedValue}%`);
-    this.movementService.moveRight(45, this.speedValue).subscribe({
+
+    this.updateVehicleStatus(this.currentMovement, this.currentMovementIcon, 'Derecha', '➡️', 'Girando', 'DirectionFunction');
+    
+    // Map frontend values to backend values
+    const backendMovement = this.mapMovementToBackend(this.currentMovement);
+    const backendDirection = this.mapDirectionToBackend(this.currentDirection);
+    
+    this.movementService.updateCarMovement(backendMovement, this.speedValue, backendDirection).subscribe({
       next: (response) => {
-        if (response.status === 'Turning.') {
-          this.updateVehicleStatus(this.currentMovement, this.currentMovementIcon, 'Derecha', '➡️', 'Girando');
-        }
-        console.log('Movement response:', response);
+        console.log('✅ Movement response:', response);
       },
       error: (error) => {
-        console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error');
+        console.error('❌ Movement error:', error);
+        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error', 'DirectionFunction');
       }
     });
   }
 
   stopCar() {
     console.log('Deteniendo el carro');
-    this.movementService.stopCar().subscribe({
+    
+    // Map frontend values to backend values
+
+    this.updateVehicleStatus('Detenido', '🛑', 'Sin dirección', '❌', 'Detenido', 'MovementFunction');
+    this.updateVehicleStatus('Detenido', '🛑', 'Sin dirección', '❌', 'Detenido', 'DirectionFunction');
+
+    const backendMovement = this.mapMovementToBackend(this.currentMovement);
+    const backendDirection = this.mapDirectionToBackend(this.currentDirection);
+    
+    this.movementService.updateCarMovement(backendMovement, 0, backendDirection).subscribe({
       next: (response) => {
-        if (response.status === 'Stopped.') {
-          this.updateVehicleStatus('Detenido', '🛑', 'Sin dirección', '❌', 'Detenido');
-        }
-        console.log('Movement response:', response);
+        console.log('✅ Movement response:', response);
       },
       error: (error) => {
-        console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '❌','Error', '❌', 'Error');
+        console.error('❌ Movement error:', error);
+        this.updateVehicleStatus('Error', '❌','Error', '❌', 'Error', 'MovementFunction');
+        this.updateVehicleStatus('Error', '❌','Error', '❌', 'Error', 'DirectionFunction');
       }
     });
   }
+
+  // Helper functions to map frontend values to backend values
+  private mapMovementToBackend(frontendMovement: string): string {
+    const movementMap: { [key: string]: string } = {
+      'Adelante': 'forward',
+      'Atrás': 'backward',
+      'Detenido': 'none'
+    };
+    return movementMap[frontendMovement] || 'none';
+  }
+
+  private mapDirectionToBackend(frontendDirection: string): string {
+    const directionMap: { [key: string]: string } = {
+      'Izquierda': 'left',
+      'Derecha': 'right',
+      'Sin dirección': 'none'
+    };
+    return directionMap[frontendDirection] || 'none';
+  }
   // Método para actualizar el estado visual del vehículo
-  updateVehicleStatus(movement: string, movementIcon: string, direction: string, directionIcon: string, vehicleStatus: string) {
+  updateVehicleStatus(movement: string, movementIcon: string, direction: string, directionIcon: string, vehicleStatus: string, requestedBy: string) {
 
     // Updates direction
-    if(direction === 'Izquierda') {
+    if(direction === 'Izquierda' && requestedBy === 'DirectionFunction') {
       switch(this.currentDirection){
         case 'Izquierda':
           this.currentDirection = 'Izquierda';
@@ -198,7 +240,7 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
           this.currentDirectionIcon = '❌';
           break;
       }
-    } else if(direction === 'Derecha') {
+    } else if(direction === 'Derecha'  && requestedBy === 'DirectionFunction') {
       switch(this.currentDirection){
         case 'Izquierda':
           this.currentDirection = 'Sin dirección';
@@ -216,7 +258,7 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
     }
 
     // Updates movement
-    if (movement === 'Adelante') {
+    if (movement === 'Adelante' && requestedBy === 'MovementFunction') {
       switch(this.gear) {
         case 'R4':
           this.currentMovement = 'Atrás';
@@ -282,7 +324,7 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
           this.speedValue = 100;
           break;
       }
-    } else if (movement === 'Atrás') {
+    } else if (movement === 'Atrás' && requestedBy === 'MovementFunction') {
       switch(this.gear) {
         case '4':
           this.currentMovement = 'Adelante';
@@ -348,7 +390,7 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
           this.speedValue = 100;
           break;
       }
-    } else if (movement === 'Detenido') {
+    } else if (movement === 'Detenido' && requestedBy === 'MovementFunction') {
       this.currentMovement = 'Detenido';
       this.currentMovementIcon = '🛑';
       this.gear = 'P';

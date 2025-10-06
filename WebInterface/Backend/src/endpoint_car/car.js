@@ -9,7 +9,8 @@ const {
   request_brake,
   request_move_left,
   request_move_right,
-  request_car_movement
+  request_car_movement,
+  update_car_movement
 } = require('./car_controller');
 
 // Variables
@@ -32,6 +33,8 @@ router.post('/car/brake', request_brake);
 router.post('/car/move_left', request_move_left);
 
 router.post('/car/move_right', request_move_right);
+
+router.post('/car/update_movement', update_car_movement);
 
 router.get('/car/movement', request_car_movement);
 

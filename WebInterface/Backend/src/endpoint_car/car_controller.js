@@ -31,6 +31,56 @@ const request_connect = (req, res) => {
   }
 };
 
+const update_car_movement = (req, res) => {
+  try {
+    const { movement, speed, direction } = req.body;
+    // Validate inputs
+    const validMovements = ['none', 'forward', 'backward'];
+    const validDirections = ['none', 'left', 'right'];
+
+    if (movement && !validMovements.includes(movement)) {
+      return res.status(400).json({
+        error: 'Invalid movement.',
+        message: `Movement must be one of: ${validMovements.join(', ')}.`
+      });
+    }
+
+    if (direction && !validDirections.includes(direction)) {
+      return res.status(400).json({
+        error: 'Invalid direction.',
+        message: `Direction must be one of: ${validDirections.join(', ')}.`
+      });
+    }
+
+    if (speed && (speed < 0 || speed > 100)) {
+      return res.status(400).json({
+        error: 'Invalid speed.',
+        message: 'Speed must be between 0 and 100.'
+      });
+    }
+
+    // Update car state
+    if (movement) car_movement = movement;
+    if (speed !== undefined) car_speed = speed;
+    if (direction) car_direction = direction;
+
+    const response = {
+      status: 'Updated.',
+      movement: car_movement,
+      speed: car_speed,
+      direction: car_direction
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(400).json({
+      error: 'Update failed.',
+      message: 'Unable to update car state.',
+      details: error.message
+    });
+  }
+};
+
 /*
 Function: request_move_forward
 Description: Sends command to move the car forward.
@@ -271,5 +321,6 @@ module.exports = {
   request_brake,
   request_move_left,
   request_move_right,
-  request_car_movement
+  request_car_movement,
+  update_car_movement
 };
