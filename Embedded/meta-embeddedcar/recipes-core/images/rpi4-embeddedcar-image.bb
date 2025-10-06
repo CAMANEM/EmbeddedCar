@@ -1,3 +1,7 @@
+# Version information
+PV = "1.0"
+PR = "r1"
+
 SUMMARY = "Custom embedded car image for Raspberry Pi"
 DESCRIPTION = "Raspberry Pi image with WiFi auto-connect and embedded car applications"
 
@@ -18,6 +22,23 @@ IMAGE_INSTALL += " \
 IMAGE_INSTALL += " \
     dhcpcd \
     iw \
+    wget \
+    "
+
+# GStreamer packages for video streaming (now available from meta-multimedia)
+IMAGE_INSTALL += " \
+    gstreamer1.0 \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    "
+
+# Essential packages only
+# Basic tools and our packages
+IMAGE_INSTALL += " \
+    raspi-gpio \
+    wget \
+    gpiolib \
+    gstreamer-video-streaming \
     "
 
 # Enable SSH and debugging

@@ -45,7 +45,7 @@ sudo bmaptool copy rpi4-embeddedcar-image-raspberrypi4.rootfs.wic.bz2 /dev/sdc
 
 ## Conexion SSH
 
-1. Encontrar la dirección IP de tu RPi4:
+1. Encontrar la dirección de nuestra red para saber donde buscar la rasberry:
 
 
 ```bash
@@ -102,7 +102,19 @@ Finalmente se establece conexion ssh con la rpi con su ip:
 ssh root@192.168.0.111
 ```
 
+Nota: En algunos casos en los que se haya conectado ya desde una misma ip y se desea reconectar, puede que se encuentre un error porque cambió la key. Para solucionarlo se debe borrar la key almacenada en el pc para esa ip (cambiar camanem por su nombre de usuario):
+
+```bash
+ssh-keygen -f "/home/camanem/.ssh/known_hosts" -R "192.168.0.111"
+```
+
 ## Probar la bliblioteca cargada automáticamente
+
+Entrar al directorio root:
+
+```bash
+cd /
+```
 
 Ir a la ubicación:
 
@@ -113,5 +125,53 @@ cd usr/bin
 Ejecutar la aplicación:
 
 ```bash
-./gpio_controller
+./video_streamer http://192.168.0.122:3000 10
 ```
+
+
+# Test directo sin programa
+```bash
+# Test directo sin programa
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! videoconvert ! videoscale ! video/x-raw,width=320,height=240 ! jpegenc quality=20 ! multipartmux boundary="--videoboundary" ! curlhttpsink location="http://192.168.0.122:3000/api/video/stream"
+```
+
+
+# Stream directo al API
+./video_streamer http://192.168.0.122:3000/api/video/stream fast 320x240
+
+# O para frames individuales
+./video_streamer http://192.168.0.122:3000/api/video/frame fast 320x240
+
+
+./video_streamer_simple http://192.168.0.122:3000/api/video/stream fast 5
+./video_streamer_simple http://192.168.0.122:3000/api/video/stream fast 20
+
+./video_streamer_simple http://192.168.0.122:3000/api/video/stream medium 10
+
+./mjpeg_streamer 8080 50 15
+
+http://192.168.0.122:3000/mjpeg_direct.html
+
+./mjpeg_streamer 8080 50 15
+
+
+curl -X POST http://localhost:3000/api/camera/udp/start -H "Content-Type: application/json" -d '{"port": 5000}'
+
+curl -X POST http://localhost:3000/api/camera/udp/start
+
+curl -X POST http://localhost:3000/api/camera/udp/start
+
+
+http://localhost:3000/gstreamer_video.html
+
+
+Pendiente:
+* Hacer commit de seguridad
+* Revisar que todo se instale desde la imagen y no se necesite sh.
+* Mejorar comentarios 
+* Mejorar detension forzada de streaming desde rpi ssh para desarrollo.
+
+
+Dormir
+Hacer lo del codigo de arqui y commit
+Hacer commit del RC
