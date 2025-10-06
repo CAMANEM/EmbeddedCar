@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { MovementService } from '../services/movement.service';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements AfterViewInit {
+export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
   
   // UI State
   speedValue: number = 50;
@@ -22,23 +22,43 @@ export class Dashboard implements AfterViewInit {
   
   // Visual indicators
   currentDirection: string = 'Detenido';
-  currentDirectionIcon: string = '🛑';
+  currentDirectionIcon: string = '';
   vehicleStatus: string = 'Detenido';
+  
+  // Teclado siempre activo
+  keyboardControlEnabled: boolean = true; 
+  activeKeys: Set<string> = new Set();
+  keyPressIndicator: string = '';
+  
+  // Se validan solo las teclas de las flechas y de espacio
+  private readonly ALLOWED_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'] as const;
   
   constructor(
     private router: Router,
     private movementService: MovementService
   ) {}
 
+  ngOnInit() {
+    console.log('Dashboard inicializado');
+    console.log('CONTROL DE TECLADO GLOBAL ACTIVO:');
+    console.log('⬆️ Flecha Arriba: Avanzar');
+    console.log('⬇️ Flecha Abajo: Retroceder');
+    console.log('⬅️ Flecha Izquierda: Girar izquierda');
+    console.log('➡️ Flecha Derecha: Girar derecha');
+    console.log('🔲 Barra Espaciadora: Detener');
+    console.log(' Teclado moviendo el carro');
+    console.log('Solo estas 5 teclas están permitidas');
+
+  }
+
+  ngOnDestroy() {
+    console.log('Dashboard destruido - limpiando listeners de teclado');
+    this.activeKeys.clear();
+  }
+
   // Método para cambiar de pestaña
   selectTab(tabName: string) {
     this.activeTab = tabName;
-    if(this.activeTab === 'fpv') {
-      this.streamActive = false;
-    } else {
-      this.stopStream();
-    }
-
     console.log(`Pestaña seleccionada: ${tabName}`);
   }
 
@@ -87,7 +107,7 @@ export class Dashboard implements AfterViewInit {
       },
       error: (error) => {
         console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '❌', 'Error');
+        this.updateVehicleStatus('Error', '', 'Error');
       }
     });
   }
@@ -103,7 +123,7 @@ export class Dashboard implements AfterViewInit {
       },
       error: (error) => {
         console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '❌', 'Error');
+        this.updateVehicleStatus('Error', '', 'Error');
       }
     });
   }
@@ -119,7 +139,7 @@ export class Dashboard implements AfterViewInit {
       },
       error: (error) => {
         console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '❌', 'Error');
+        this.updateVehicleStatus('Error', '', 'Error');
       }
     });
   }
@@ -135,7 +155,7 @@ export class Dashboard implements AfterViewInit {
       },
       error: (error) => {
         console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '❌', 'Error');
+        this.updateVehicleStatus('Error', '', 'Error');
       }
     });
   }
@@ -145,13 +165,13 @@ export class Dashboard implements AfterViewInit {
     this.movementService.stopCar().subscribe({
       next: (response) => {
         if (response.status === 'Stopped.') {
-          this.updateVehicleStatus('Detenido', '🛑', 'Detenido');
+          this.updateVehicleStatus('Detenido', '', 'Detenido');
         }
         console.log('Movement response:', response);
       },
       error: (error) => {
         console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '❌', 'Error');
+        this.updateVehicleStatus('Error', '', 'Error');
       }
     });
   }
@@ -160,6 +180,76 @@ export class Dashboard implements AfterViewInit {
     this.currentDirection = direction;
     this.currentDirectionIcon = icon;
     this.vehicleStatus = vehicleStatus;
+  }
+
+  // Control del carro con teclas de flecha 
+  @HostListener('window:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    if (!this.ALLOWED_KEYS.includes(event.code as any)) {
+      return; 
+    }
+    event.preventDefault();
+
+    if (this.activeKeys.has(event.code)) return;
+
+    this.activeKeys.add(event.code);
+    this.updateKeyIndicator();
+
+    switch (event.code) {
+      case 'ArrowUp':
+        console.log(`🎮 Teclado: Avanzar (↑) - Desde sección: ${this.activeTab.toUpperCase()}`);
+        this.moveForward();
+        break;
+      case 'ArrowDown':
+        console.log(`🎮 Teclado: Retroceder (↓) - Desde sección: ${this.activeTab.toUpperCase()}`); 
+        this.moveBackward();
+        break;
+      case 'ArrowLeft':
+        console.log(`🎮 Teclado: Girar izquierda (←) - Desde sección: ${this.activeTab.toUpperCase()}`);
+        this.moveLeft();
+        break;
+      case 'ArrowRight':
+        console.log(`🎮 Teclado: Girar derecha (→) - Desde sección: ${this.activeTab.toUpperCase()}`);
+        this.moveRight();
+        break;
+      case 'Space':
+        console.log(`🎮 Teclado: Detener (Espacio) - Desde sección: ${this.activeTab.toUpperCase()}`);
+        this.stopCar();
+        break;
+    }
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  onKeyUp(event: KeyboardEvent) {
+    //  Reconoce las teclas de la flecha y la de espacio 
+    if (!this.ALLOWED_KEYS.includes(event.code as any)) {
+      return; // Ignorar cualquier otra tecla
+    }
+    this.activeKeys.delete(event.code);
+    this.updateKeyIndicator();
+  }
+
+  // Método para mostrar indicador visual de teclas activas
+  private updateKeyIndicator() {
+    const keyMap: { [key: string]: string } = {
+      'ArrowUp': '⬆️',
+      'ArrowDown': '⬇️', 
+      'ArrowLeft': '⬅️',
+      'ArrowRight': '➡️',
+      'Space': 'Detenido'
+    };
+
+    this.keyPressIndicator = Array.from(this.activeKeys)
+      .map(key => keyMap[key] || key)
+      .join(' ');
+  }
+
+  // Método de información del teclado 
+  showKeyboardInfo() {
+    console.log('Control de teclado siempre activo');
+    console.log('  • ⬆️ ⬇️ ⬅️ ➡️ para mover');
+    console.log('  • 🔲 Espacio para detener');
+    console.log('  • Funciona junto con los botones D-pad');
   }
 
   // Stream properties
@@ -322,6 +412,85 @@ export class Dashboard implements AfterViewInit {
     if (activeImg && activeImg.style.display === 'block') {
       const newUrl = this.currentStreamMethod === 'gstreamer' ? urls.gstreamerUrl : urls.mjpegUrl;
       activeImg.src = newUrl + '&t=' + Date.now();
+    }
+  }
+
+  // Capture screenshot from video stream
+  captureScreenshot(): void {
+    if (!this.streamActive) {
+      alert('No hay stream activo para capturar');
+      return;
+    }
+
+    console.log('Capturing screenshot...');
+    
+    const gstreamerImg = document.getElementById('gstreamer-stream') as HTMLImageElement;
+    
+    if (!gstreamerImg || gstreamerImg.style.display === 'none') {
+      alert(' No se puede capturar: video no disponible');
+      return;
+    }
+
+    try {
+      // Create a canvas element to capture the image
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) {
+        alert(' Error: no se pudo crear el contexto del canvas');
+        return;
+      }
+
+      // Set canvas size to match the image
+      canvas.width = gstreamerImg.naturalWidth || gstreamerImg.width;
+      canvas.height = gstreamerImg.naturalHeight || gstreamerImg.height;
+
+      // Draw the image onto the canvas
+      ctx.drawImage(gstreamerImg, 0, 0, canvas.width, canvas.height);
+
+      // Convert canvas to blob and download
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          alert('❌ Error al generar la imagen');
+          return;
+        }
+
+        // Create download link
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Generate filename with timestamp
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+        link.download = `captura-camara-${timestamp}.png`;
+        
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        URL.revokeObjectURL(url);
+        
+        console.log('✅ Screenshot saved successfully');
+        
+        // Show success message
+        const statusText = document.getElementById('gstreamer-status-text');
+        const originalText = statusText?.textContent;
+        if (statusText) {
+          statusText.textContent = 'Captura guardada';
+          setTimeout(() => {
+            if (statusText && originalText) {
+              statusText.textContent = originalText;
+            }
+          }, 2000);
+        }
+        
+      }, 'image/png', 1.0);
+
+    } catch (error) {
+      console.error(' Error capturing screenshot:', error);
+      alert(' Error al capturar la pantalla. Verifique que el video esté cargado correctamente.');
     }
   }
 
