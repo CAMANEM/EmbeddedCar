@@ -44,7 +44,7 @@ Last modified by:
 */
 const request_move_forward = (req, res) => {
   try {
-    const { speed, duration } = req.body;
+    const { speed } = req.body;
     
     // Validate inputs
     if (speed && (speed < 0 || speed > 100)) {
@@ -52,19 +52,20 @@ const request_move_forward = (req, res) => {
         error: 'Invalid speed.',
         message: 'Speed must be between 0 and 100.'
       });
+    } else {
+      // Update car state
+      car_movement = 'forward';
+      car_speed = speed || 50;
+
+      const response = {
+        status: 'Moving.',
+        direction: 'Forward.',
+        speed: speed || 50,
+        timestamp: new Date().toISOString()
+      };
+      res.status(200).json(response);
     }
 
-    // TODO: Implement forward movement logic to send to RBPI API.
-
-    const response = {
-      status: 'Moving.',
-      direction: 'Forward.',
-      speed: speed || 50,
-      duration: duration || null,
-      timestamp: new Date().toISOString()
-    };
-
-    res.status(200).json(response);
   } catch (error) {
     res.status(400).json({
       error: 'Movement failed.',
@@ -87,7 +88,7 @@ Last modified by:
 */
 const requestmove_backwards = (req, res) => {
   try {
-    const { speed, duration } = req.body;
+    const { speed } = req.body;
     
     // Validate inputs
     if (speed && (speed < 0 || speed > 100)) {
@@ -95,19 +96,20 @@ const requestmove_backwards = (req, res) => {
         error: 'Invalid speed.',
         message: 'Speed must be between 0 and 100.'
       });
+    } else {
+      // Update car state
+      car_movement = 'backward';
+      car_speed = speed || 50;
+
+      const response = {
+        status: 'Moving.',
+        direction: 'Backwards.',
+        speed: speed || 50,
+        timestamp: new Date().toISOString()
+      };
+
+      res.status(200).json(response);
     }
-
-    // TODO: Implement actual backward movement logic to send to RBPI API.
-
-    const response = {
-      status: 'Moving.',
-      direction: 'Backwards.',
-      speed: speed || 50,
-      duration: duration || null,
-      timestamp: new Date().toISOString()
-    };
-
-    res.status(200).json(response);
   } catch (error) {
     res.status(400).json({
       error: 'Movement failed.',
@@ -130,7 +132,10 @@ Last modified by:
 */
 const request_brake = (req, res) => {
   try {
-    // TODO: Implement actual brake logic
+    // Update car state
+    car_movement = 'none';
+    car_speed = 0;
+    car_direction = 'none';
 
     const response = {
       status: 'Stopped.',
@@ -161,27 +166,34 @@ Last modified by:
 */
 const request_move_left = (req, res) => {
   try {
-    const { angle, speed } = req.body;
+    const { speed } = req.body;
     
     // Validate inputs
-    if (angle && (angle < 0 || angle > 90)) {
+    if (speed && (speed < 0 || speed > 100)) {
       return res.status(400).json({
-        error: 'Invalid angle.',
-        message: 'Turn angle must be between 0 and 90 degrees.'
+        error: 'Invalid speed.',
+        message: 'Speed must be between 0 and 100.'
+      });
+    } else {
+      // Update car state
+      car_direction = 'left';
+      car_speed = speed || 30;
+
+      const response = {
+        status: 'Turning.',
+        direction: 'Left.',
+        speed: speed || 30,
+        timestamp: new Date().toISOString()
+      };
+
+      res.status(200).json({
+        status: 'Turning.',
+        direction: 'Left.',
+        speed: speed || 30,
+        timestamp: new Date().toISOString()
       });
     }
-
-    // TODO: Implement actual left turn logic
-
-    const response = {
-      status: 'Turning.',
-      direction: 'Left.',
-      angle: angle || 45,
-      speed: speed || 30,
-      timestamp: new Date().toISOString()
-    };
-
-    res.status(200).json(response);
+    
   } catch (error) {
     res.status(400).json({
       error: 'Turn failed.',
@@ -204,31 +216,49 @@ Last modified by:
 */
 const request_move_right = (req, res) => {
     try {
-    const { angle, speed } = req.body;
+    const { speed } = req.body;
     
     // Validate inputs
-    if (angle && (angle < 0 || angle > 90)) {
+    if (speed && (speed < 0 || speed > 100)) {
       return res.status(400).json({
-        error: 'Invalid angle.',
-        message: 'Turn angle must be between 0 and 90 degrees.'
+        error: 'Invalid speed.',
+        message: 'Speed must be between 0 and 100.'
       });
+    } else {
+      // Update car state
+      car_direction = 'right';
+      car_speed = speed || 30;
+
+      const response = {
+        status: 'Turning.',
+        direction: 'Right.',
+        speed: speed || 30,
+        timestamp: new Date().toISOString()
+      };
+
+      res.status(200).json(response);
     }
+  } catch (error) {
+    res.status(400).json({
+      error: 'Turn failed.',
+      message: 'Unable to turn car right.',
+      details: error.message
+    });
+  }
+};
 
-    // TODO: Implement actual right turn logic
-
+const request_car_movement = (req, res) => {
+  try {
     const response = {
-      status: 'Turning.',
-      direction: 'Right.',
-      angle: angle || 45,
-      speed: speed || 30,
-      timestamp: new Date().toISOString()
+      movement: car_movement,
+      speed: car_speed,
+      direction: car_direction
     };
 
     res.status(200).json(response);
   } catch (error) {
     res.status(400).json({
-      error: 'Turn failed.',
-      message: 'Unable to turn car right.',
+      error: 'Failed to get car movement.',
       details: error.message
     });
   }
@@ -240,5 +270,6 @@ module.exports = {
   requestmove_backwards,
   request_brake,
   request_move_left,
-  request_move_right
+  request_move_right,
+  request_car_movement
 };
