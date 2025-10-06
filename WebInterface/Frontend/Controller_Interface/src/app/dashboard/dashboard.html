@@ -213,6 +213,7 @@
 						<button class="fpv_button" (click)="startStream()">🚀 Iniciar Stream</button>
 						<button class="fpv_button" (click)="stopStream()">⏹️ Detener Stream</button>
 						<button class="fpv_button" (click)="refreshStream()">🔄 Refrescar</button>
+						<button class="fpv_button" (click)="captureScreenshot()" [disabled]="!streamActive">📸 Capturar</button>
 					</div>
 				</div>
 				
@@ -228,7 +229,7 @@
 					<div class="fpv_speed-control-container" style="background: rgba(0,0,0,0.7); padding: 1rem; border-radius: 12px; backdrop-filter: blur(10px);">
 						<div class="fpv_speed-label" style="color: white; text-align: center;">Velocidad</div>
 						<div class="fpv_speed-slider-container">
-							<input type="range" class="fpv_speed-slider" min="0" max="100" [(ngModel)]="speedValue" (input)="onSpeedChange(speedValue)">
+							<input *ngIf="false" type="range" class="fpv_speed-slider" min="0" max="100" [(ngModel)]="speedValue" (input)="onSpeedChange(speedValue)">
 							<div class="fpv_speed-display" style="color: white;">
 								<span>{{speedValue}}</span>%
 							</div>
@@ -242,6 +243,11 @@
 					<!-- Status Panel (Bottom Center) -->
 					<div class="fpv_status-panel" style="background: rgba(0,0,0,0.7); padding: 1rem; border-radius: 12px; backdrop-filter: blur(10px);">
 						<div class="fpv_status-item">
+							<span class="fpv_status-icon" style="color: white;">{{currentMovementIcon}}</span>
+							<span class="fpv_status-text" style="color: white;">{{currentMovement}}</span>
+						</div>
+						<div class="fpv_status-divider" style="color: white;">|</div>
+						<div class="fpv_status-item">
 							<span class="fpv_status-icon" style="color: white;">{{currentDirectionIcon}}</span>
 							<span class="fpv_status-text" style="color: white;">{{currentDirection}}</span>
 						</div>
@@ -252,6 +258,10 @@
 						<div class="fpv_status-divider" style="color: white;">|</div>
 						<div class="fpv_status-item">
 							<span class="fpv_status-text" style="color: white;">{{vehicleStatus}}</span>
+						</div>
+						<div class="fpv_status-divider" style="color: white;">|</div>
+						<div class="fpv_status-item">
+							<span class="fpv_status-text" style="color: white;">{{gear}}</span>
 						</div>
 					</div>
 

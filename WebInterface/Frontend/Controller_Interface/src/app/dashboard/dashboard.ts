@@ -21,9 +21,13 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
   
   
   // Visual indicators
-  currentDirection: string = 'Detenido';
-  currentDirectionIcon: string = '';
+  currentMovement: string = 'Detenido';
+  currentMovementIcon: string = '🛑';
+  currentDirection: string = 'Sin dirección';
+  currentDirectionIcon: string = '❌';
   vehicleStatus: string = 'Detenido';
+  gear: string = 'P';
+  gearIcon: string = '🅿️';
   
   // Teclado siempre activo
   keyboardControlEnabled: boolean = true; 
@@ -101,13 +105,13 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
     this.movementService.moveForward(this.speedValue).subscribe({
       next: (response) => {
         if (response.status === 'Moving.') {
-          this.updateVehicleStatus('Adelante', '⬆️', 'Moviendo');
+          this.updateVehicleStatus('Adelante', '⬆️', this.currentDirection, this.currentDirectionIcon, 'Moviendo');
         }
         console.log('Movement response:', response);
       },
       error: (error) => {
         console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '', 'Error');
+        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error');
       }
     });
   }
@@ -117,13 +121,13 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
     this.movementService.moveBackward(this.speedValue).subscribe({
       next: (response) => {
         if (response.status === 'Moving.') {
-          this.updateVehicleStatus('Atrás', '⬇️', 'Moviendo');
+          this.updateVehicleStatus('Atrás', '⬇️', this.currentDirection, this.currentDirectionIcon, 'Moviendo');
         }
         console.log('Movement response:', response);
       },
       error: (error) => {
         console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '', 'Error');
+        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error');
       }
     });
   }
@@ -133,13 +137,13 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
     this.movementService.moveLeft(45, this.speedValue).subscribe({
       next: (response) => {
         if (response.status === 'Turning.') {
-          this.updateVehicleStatus('Izquierda', '⬅️', 'Girando');
+          this.updateVehicleStatus(this.currentMovement, this.currentMovementIcon, 'Izquierda', '⬅️', 'Girando');
         }
         console.log('Movement response:', response);
       },
       error: (error) => {
         console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '', 'Error');
+        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error');
       }
     });
   }
@@ -149,13 +153,13 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
     this.movementService.moveRight(45, this.speedValue).subscribe({
       next: (response) => {
         if (response.status === 'Turning.') {
-          this.updateVehicleStatus('Derecha', '➡️', 'Girando');
+          this.updateVehicleStatus(this.currentMovement, this.currentMovementIcon, 'Derecha', '➡️', 'Girando');
         }
         console.log('Movement response:', response);
       },
       error: (error) => {
         console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '', 'Error');
+        this.updateVehicleStatus('Error', '❌', 'Error', '❌', 'Error');
       }
     });
   }
@@ -165,20 +169,193 @@ export class Dashboard implements OnInit, OnDestroy, AfterViewInit {
     this.movementService.stopCar().subscribe({
       next: (response) => {
         if (response.status === 'Stopped.') {
-          this.updateVehicleStatus('Detenido', '', 'Detenido');
+          this.updateVehicleStatus('Detenido', '🛑', 'Sin dirección', '❌', 'Detenido');
         }
         console.log('Movement response:', response);
       },
       error: (error) => {
         console.error('Movement error:', error);
-        this.updateVehicleStatus('Error', '', 'Error');
+        this.updateVehicleStatus('Error', '❌','Error', '❌', 'Error');
       }
     });
   }
   // Método para actualizar el estado visual del vehículo
-  updateVehicleStatus(direction: string, icon: string, vehicleStatus: string) {
-    this.currentDirection = direction;
-    this.currentDirectionIcon = icon;
+  updateVehicleStatus(movement: string, movementIcon: string, direction: string, directionIcon: string, vehicleStatus: string) {
+
+    // Updates direction
+    if(direction === 'Izquierda') {
+      switch(this.currentDirection){
+        case 'Izquierda':
+          this.currentDirection = 'Izquierda';
+          this.currentDirectionIcon = '⬅️';
+          break;
+        case 'Sin dirección':
+          this.currentDirection = 'Izquierda';
+          this.currentDirectionIcon = '⬅️';
+          break;
+        case 'Derecha':
+          this.currentDirection = 'Sin dirección';
+          this.currentDirectionIcon = '❌';
+          break;
+      }
+    } else if(direction === 'Derecha') {
+      switch(this.currentDirection){
+        case 'Izquierda':
+          this.currentDirection = 'Sin dirección';
+          this.currentDirectionIcon = '❌';
+          break;
+        case 'Sin dirección':
+          this.currentDirection = 'Derecha';
+          this.currentDirectionIcon = '➡️';
+          break;
+        case 'Derecha':
+          this.currentDirection = 'Derecha';
+          this.currentDirectionIcon = '➡️';
+          break;
+      }
+    }
+
+    // Updates movement
+    if (movement === 'Adelante') {
+      switch(this.gear) {
+        case 'R4':
+          this.currentMovement = 'Atrás';
+          this.currentMovementIcon = '⬇️';
+          this.gear = 'R3';
+          this.gearIcon = '⬇️3️⃣';
+          this.speedValue = 75;
+          break;
+        case 'R3':
+          this.currentMovement = 'Atrás';
+          this.currentMovementIcon = '⬇️';
+          this.gear = 'R2';
+          this.gearIcon = '⬇️2️⃣';
+          this.speedValue = 50;
+          break;
+        case 'R2':
+          this.currentMovement = 'Atrás';
+          this.currentMovementIcon = '⬇️';
+          this.gear = 'R1';
+          this.gearIcon = '⬇️1️⃣';
+          this.speedValue = 25;
+          break;
+        case 'R1':
+          this.currentMovement = 'Detenido';
+          this.currentMovementIcon = '🛑';
+          this.gear = 'P';
+          this.gearIcon = '🅿️';
+          this.speedValue = 0;
+          break;
+        case 'P':
+          this.currentMovement = 'Adelante';
+          this.currentMovementIcon = '⬆️';
+          this.gear = '1';
+          this.gearIcon = '⬆️1️⃣';
+          this.speedValue = 25;
+          break;
+        case '1':
+          this.currentMovement = 'Adelante';
+          this.currentMovementIcon = '⬆️';
+          this.gear = '2';
+          this.gearIcon = '⬆️2️⃣';
+          this.speedValue = 50;
+          break;
+        case '2':
+          this.currentMovement = 'Adelante';
+          this.currentMovementIcon = '⬆️';
+          this.gear = '3';
+          this.gearIcon = '⬆️3️⃣';
+          this.speedValue = 75;
+          break;
+        case '3':
+          this.currentMovement = 'Adelante';
+          this.currentMovementIcon = '⬆️';
+          this.gear = '4';
+          this.gearIcon = '⬆️4️⃣';
+          this.speedValue = 100;
+          break;
+        case '4':
+          this.currentMovement = 'Adelante';
+          this.currentMovementIcon = '⬆️';
+          this.gear = '4';
+          this.gearIcon = '⬆️4️⃣';
+          this.speedValue = 100;
+          break;
+      }
+    } else if (movement === 'Atrás') {
+      switch(this.gear) {
+        case '4':
+          this.currentMovement = 'Adelante';
+          this.currentMovementIcon = '⬆️';
+          this.gear = '3';
+          this.gearIcon = '⬆️3️⃣';
+          this.speedValue = 75;
+          break;
+        case '3':
+          this.currentMovement = 'Adelante';
+          this.currentMovementIcon = '⬆️';
+          this.gear = '2';
+          this.gearIcon = '⬆️2️⃣';
+          this.speedValue = 50;
+          break;
+        case '2':
+          this.currentMovement = 'Adelante';
+          this.currentMovementIcon = '⬆️';
+          this.gear = '1';
+          this.gearIcon = '⬆️1️⃣';
+          this.speedValue = 25;
+          break;
+        case '1':
+          this.currentMovement = 'Detenido';
+          this.currentMovementIcon = '🛑';
+          this.gear = 'P';
+          this.gearIcon = '🅿️';
+          this.speedValue = 0;
+          break;
+        case 'P':
+          this.currentMovement = 'Atrás';
+          this.currentMovementIcon = '⬇️';
+          this.gear = 'R1';
+          this.gearIcon = '⬇️1️⃣';
+          this.speedValue = 25;
+          break;
+        case 'R1':
+          this.currentMovement = 'Atrás';
+          this.currentMovementIcon = '⬇️';
+          this.gear = 'R2';
+          this.gearIcon = '⬇️2️⃣';
+          this.speedValue = 50;
+          break;
+        case 'R2':
+          this.currentMovement = 'Atrás';
+          this.currentMovementIcon = '⬇️';
+          this.gear = 'R3';
+          this.gearIcon = '⬇️3️⃣';
+          this.speedValue = 75;
+          break;
+        case 'R3':
+          this.currentMovement = 'Atrás';
+          this.currentMovementIcon = '⬇️';
+          this.gear = 'R4';
+          this.gearIcon = '⬇️4️⃣';
+          this.speedValue = 100;
+          break;
+        case 'R4':
+          this.currentMovement = 'Atrás';
+          this.currentMovementIcon = '⬇️';
+          this.gear = 'R4';
+          this.gearIcon = '⬇️4️⃣';
+          this.speedValue = 100;
+          break;
+      }
+    } else if (movement === 'Detenido') {
+      this.currentMovement = 'Detenido';
+      this.currentMovementIcon = '🛑';
+      this.gear = 'P';
+      this.gearIcon = '🅿️';
+      this.speedValue = 0;
+    }
+
     this.vehicleStatus = vehicleStatus;
   }
 
