@@ -4,6 +4,9 @@ This project contains the development environment for an embedded car system, or
 
 ## Table of Contents
 
+- [System Architecture](#system-architecture)
+- [Key Features](#key-features)
+- [API Documentation](#api-documentation)
 - [Project Structure](#project-structure)
 - [Prerequisites Installation](#prerequisites-installation)
     - [Yocto Prerequisites](#yocto-prerequisites)
@@ -23,6 +26,341 @@ This project contains the development environment for an embedded car system, or
 - [Version Information](#version-information)
 - [Contributing](#contributing)
 - [License](#license)
+
+##  System Architecture
+
+### Overall Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        EmbeddedCar System                       │
+└─────────────────────────────────────────────────────────────────┘
+                                  │
+                    ┌─────────────┼─────────────┐
+                    │             │             │
+         ┌──────────▼──────────┐  │  ┌─────────▼─────────┐
+         │   Web Interface     │  │  │  Embedded System  │
+         │   (Frontend)        │  │  │  (Raspberry Pi)   │
+         └─────────────────────┘  │  └───────────────────┘
+                    │             │             │
+    ┌───────────────┼─────────────┼─────────────┼──────────────┐
+    │               │             │             │              │
+┌───▼───┐    ┌──────▼──────┐   ┌──▼──┐   ┌─────▼─────┐   ┌────▼────┐
+│Angular│    │   Node.js   │   │HTTP │   │  Yocto    │   │ Hardware│
+│Client │    │   Backend   │   │API  │   │  Linux    │   │ Control │
+└───────┘    └─────────────┘   └─────┘   └───────────┘   └─────────┘
+```
+
+### Component Architecture
+
+####  **Frontend-Angular 20.2.1**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Angular Frontend                         │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────────┐ │
+│  │ Dashboard   │  │   Services   │  │     Components      │ │
+│  │ Component   │  │              │  │                     │ │
+│  │             │  │ ┌──────────┐ │  │ ┌─────────────────┐ │ │
+│  │ • Manual    │  │ │Movement  │ │  │ │ • D-pad Control │ │ │
+│  │   Control   │  │ │Service   │ │  │ │ • Speed Slider  │ │ │
+│  │ • Sensors   │  │ └──────────┘ │  │ │ • Video Stream  │ │ │
+│  │ • Cameras   │  │ ┌──────────┐ │  │ │ • Status Panel  │ │ │
+│  │ • FPV       │  │ │Auth      │ │  │ └─────────────────┘ │ │
+│  │ • Config    │  │ │Service   │ │  │                     │ │
+│  └─────────────┘  │ └──────────┘ │  └─────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### **Backend- Node.js**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Node.js Backend API                      │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────────┐ │
+│  │   Routes    │  │ Middleware   │  │    Controllers      │ │
+│  │             │  │              │  │                     │ │
+│  │ • /api/move │  │ • CORS       │  │ • Movement Control  │ │
+│  │ • /api/stop │  │ • Auth       │  │ • Camera Streaming  │ │
+│  │ • /api/     │  │ • Logging    │  │ • Sensor Reading    │ │
+│  │   camera    │  │ • Error      │  │ • GPIO Management   │ │
+│  │ • /api/     │  │   Handling   │  │                     │ │
+│  │   sensors   │  │              │  │                     │ │
+│  └─────────────┘  └──────────────┘  └─────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+```
+
+####  **Embedded- Yocto Linux + Hardware**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                 Raspberry Pi Hardware                       │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────────┐ │
+│  │Yocto Linux  │  │   Drivers    │  │      Hardware       │ │
+│  │             │  │              │  │                     │ │
+│  │ • Custom    │  │ • GPIO       │  │ • DC Motors         │ │
+│  │   Build     │  │ • I2C        │  │ • Servo Motors      │ │
+│  │ • Minimal   │  │ • SPI        │  │ • Camera Module     │ │
+│  │   Kernel    │  │ • Camera     │  │ • Sensors           │ │
+│  │ • Network   │  │   (V4L2)     │  │ • Power Management  │ │
+│  │   Stack     │  │              │  │                     │ │
+│  └─────────────┘  └──────────────┘  └─────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+```
+### Communication 
+
+The system follows a structured communication pattern that ensures reliable, real-time control of the integrated vehicle:
+
+#### **1. User Interaction **
+The user interacts with the system using multiple input methods:
+- **Web Interface**: Pressing buttons, adjusting sliders, or using touch controls
+- **Keyboard Input**: Using the arrow keys and spacebar for direct control
+
+#### **2. Frontend Processing**
+The Angular frontend processes user input and manages the interface:
+- **Event Handling**: Captures user interactions (clicks, keystrokes, touch events)
+- **State Handling**: Maintains the current vehicle state, speed settings, and connection status
+- **Input Validation**: Ensures commands are within valid ranges (speed 0-100%, valid directions)
+- **User Feedback**: Updates visual indicators and status displays immediately
+
+#### **3. HTTP Communication **
+The frontend communicates with the backend using RESTful HTTP requests:
+- **Request Format**: Converts user actions into structured JSON payloads
+- **API Calls**: Sends POST/GET requests to specific endpoints (/api/move/forward, /api/stop, etc.)
+- **Error Handling**: Handles network timeouts, connection failures, and invalid responses
+- **Retry Logic**: Implements automatic retries for failed requests
+
+#### **4. Backend API **
+The Node.js backend processes incoming requests and manages communication with the hardware:
+- **Request Parsing**: Validates and parses incoming JSON data
+- **Authentication**: Verifies user permissions and session validity
+- **Command Translation**: Converts high-level commands into hardware-specific instructions
+- **Concurrent Management**: Securely handles multiple simultaneous requests
+
+#### **5. Hardware Control Layer (GPIO)**
+The backend interacts directly with the Raspberry Pi hardware:
+- **GPIO Management**: Controls digital pins for motor direction and speed
+- **PWM Control**: Generates pulse-width modulation signals for precise speed control
+- **Sensor Reading**: Monitors hardware sensors for status information
+- **Security Checks**: Implements hardware-level security mechanisms
+
+#### **6. Physical Response Layer**
+Hardware responds to control signals:
+- **Motor Control**: DC motors respond to direction and speed commands
+- **Servo Control**: Steering servos adjust to specific angles
+- **Sensor Feedback**: Hardware sensors provide real-time status information
+- **Power Management**: Monitors battery levels and power consumption
+
+#### **7. Feedback Loop**
+The system maintains real-time feedback through a continuous monitoring cycle:
+- **Status Monitoring**: The hardware continuously reports the current status
+- **API Response**: The backend sends JSON responses with the current status
+- **Frontend Updates**: Angular updates the interface with real-time information
+- **Visual Feedback**: The user sees immediate feedback through status indicators and video streaming
+
+#### **Communication Protocols Used**
+- **HTTP/HTTPS**: Primary communication protocol between the frontend and backend
+- **WebSocket**: For real-time video streaming and continuous status updates
+- **GPIO Protocol**: Direct hardware communication on the Raspberry Pi
+- **I2C/SPI**: For communication with sensors and advanced hardware features
+
+
+##  Key Features
+
+### **Complete Web Interface**
+- **Manual Control**: Interactive D-pad for directional movement
+- **Keyboard Control**: Arrow keys functional from any section
+- **Speed Control**: Slider for velocity adjustment (0-100%)
+
+
+###  **Video System**
+- **Real-time Streaming**: GStreamer + MJPEG fallback
+- **FPV View**: Game-like control with overlays
+- **Screenshot Capture**: Automatic PNG image download
+- **Flexible Configuration**: Configurable IP and port
+
+### **Embedded System**
+- **Yocto Linux**: Optimized custom build
+- **Raspberry Pi**: Native hardware support
+- **REST API**: Node.js backend for communication
+- **GPIO Control**: Direct motor and sensor management
+
+### **Monitoring**
+- **Vehicle Status**: Real-time visual indicators
+- **Network Connection**: Connectivity monitoring
+- **Sensors**: Dedicated section for telemetry
+
+## API Documentation
+
+### Base URL
+```
+http://raspberry-pi-ip:3000/api
+```
+
+### Authentication Endpoints
+
+#### POST `/auth/login`
+**Description**: Authenticate user and obtain access token
+```json
+Request Body:
+{
+  "username": "admin",
+  "password": "password"
+}
+
+Response:
+{
+  "status": "success",
+  "token": "jwt-token-here",
+  "user": {
+    "username": "admin",
+    "role": "admin"
+  }
+}
+```
+
+### Movement Control Endpoints
+
+#### POST `/move/forward`
+**Description**: Move vehicle forward
+```json
+Request Body:
+{
+  "speed": 75,
+  "duration": 1000
+}
+
+Response:
+{
+  "status": "Moving forward.",
+  "speed": 75,
+  "direction": "forward"
+}
+```
+
+#### POST `/move/backward`
+**Description**: Move vehicle backward
+```json
+Request Body:
+{
+  "speed": 50,
+  "duration": 1000
+}
+
+Response:
+{
+  "status": "Moving backward.",
+  "speed": 50,
+  "direction": "backward"
+}
+```
+
+#### POST `/move/left`
+**Description**: Turn vehicle left
+```json
+Request Body:
+{
+  "angle": 45,
+  "speed": 60
+}
+
+Response:
+{
+  "status": "Turning left.",
+  "angle": 45,
+  "speed": 60
+}
+```
+
+#### POST `/move/right`
+**Description**: Turn vehicle right
+```json
+Request Body:
+{
+  "angle": 45,
+  "speed": 60
+}
+
+Response:
+{
+  "status": "Turning right.",
+  "angle": 45,
+  "speed": 60
+}
+```
+
+#### POST `/move/stop`
+**Description**: Stop all vehicle movement
+```json
+Response:
+{
+  "status": "Stopped.",
+  "timestamp": "2025-10-07T20:30:00Z"
+}
+```
+
+### Camera Endpoints
+
+#### GET `/camera/gstreamer-stream`
+**Description**: Get GStreamer video stream
+```
+Query Parameters:
+- ip: Raspberry Pi IP address
+- port: Stream port (default: 8080)
+
+Response: Binary video stream
+Content-Type: multipart/x-mixed-replace
+```
+
+#### GET `/camera/mjpeg-stream`
+**Description**: Get MJPEG video stream (fallback)
+```
+Query Parameters:
+- ip: Raspberry Pi IP address  
+- port: Stream port (default: 8080)
+
+Response: Binary MJPEG stream
+Content-Type: multipart/x-mixed-replace
+```
+
+### Sensor Endpoints
+
+#### GET `/sensors/status`
+**Description**: Get all sensor readings
+```json
+Response:
+{
+  "temperature": 25.6,
+  "humidity": 60.2,
+  "distance": 150.5,
+  "battery": 85,
+  "timestamp": "2025-10-07T20:30:00Z"
+}
+```
+
+### Error Responses
+
+All endpoints may return these error responses:
+```json
+400 Bad Request:
+{
+  "error": "Invalid parameters",
+  "message": "Speed must be between 0 and 100"
+}
+
+401 Unauthorized:
+{
+  "error": "Authentication required",
+  "message": "Please provide valid credentials"
+}
+
+500 Internal Server Error:
+{
+  "error": "Hardware communication failed",
+  "message": "Unable to control motors"
+}
+```
+
 
 ## Project Structure
 
