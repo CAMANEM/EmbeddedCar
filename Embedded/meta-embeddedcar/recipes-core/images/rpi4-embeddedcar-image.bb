@@ -1,6 +1,6 @@
 # Version information
 PV = "1.0"
-PR = "r9"
+PR = "r10"
 
 SUMMARY = "Custom embedded car image for Raspberry Pi 4"
 DESCRIPTION = "Raspberry Pi 4 image with WiFi auto-connect and embedded car applications"
@@ -43,6 +43,7 @@ IMAGE_INSTALL += " \
     json-c \
     gpiolib \
     gstreamer-video-streaming \
+    embeddedcar-services \
     "
 
 # PWM Hardware Support - Include device tree overlays
