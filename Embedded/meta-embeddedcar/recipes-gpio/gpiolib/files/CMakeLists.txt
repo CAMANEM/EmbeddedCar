@@ -1,15 +1,23 @@
 cmake_minimum_required (VERSION 2.6)
 #define the project
 project (gpio_library)
+
 #add lib subdirectory to build
 add_subdirectory (lib)
 #include directories to building path
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/lib)
+
 # add the executable
 add_executable (gpio_controller gpio_controller.c)
+
 #link against required libraries
-target_link_libraries(gpio_controller gpiolib)
+target_link_libraries(gpio_controller 
+    gpiolib
+    json-c
+    pthread
+)
+
 #install the binary
 install (TARGETS gpio_controller DESTINATION bin)
 #install the README file (add readme to .tar) - commented out for now

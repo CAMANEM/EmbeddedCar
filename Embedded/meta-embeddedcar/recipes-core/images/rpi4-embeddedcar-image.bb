@@ -1,11 +1,14 @@
 # Version information
 PV = "1.0"
-PR = "r1"
+PR = "r6"
 
-SUMMARY = "Custom embedded car image for Raspberry Pi"
-DESCRIPTION = "Raspberry Pi image with WiFi auto-connect and embedded car applications"
+SUMMARY = "Custom embedded car image for Raspberry Pi 4"
+DESCRIPTION = "Raspberry Pi 4 image with WiFi auto-connect and embedded car applications"
 
 inherit core-image
+
+# Compatible only with raspberrypi4
+COMPATIBLE_MACHINE = "raspberrypi4"
 
 # Base on core-image-minimal but with our WiFi configuration
 IMAGE_INSTALL = "packagegroup-core-boot ${CORE_IMAGE_EXTRA_INSTALL}"
@@ -37,6 +40,7 @@ IMAGE_INSTALL += " \
 IMAGE_INSTALL += " \
     raspi-gpio \
     wget \
+    json-c \
     gpiolib \
     gstreamer-video-streaming \
     "

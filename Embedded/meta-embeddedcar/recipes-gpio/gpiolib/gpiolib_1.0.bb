@@ -4,8 +4,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 # Version information
-PV = "1.0"
-PR = "r0"
+PV = "1.8"
+PR = "r2"
 
 # Source location - usando archivos locales
 SRC_URI = "file://gpio_controller.c \
@@ -23,8 +23,8 @@ S = "${WORKDIR}"
 B = "${WORKDIR}/build"
 
 # Dependencias
-DEPENDS = "cmake-native"
-RDEPENDS:${PN} = "raspi-gpio"
+DEPENDS = "cmake-native json-c"
+RDEPENDS:${PN} = "raspi-gpio json-c wget"
 
 # Herramientas de build
 inherit cmake
