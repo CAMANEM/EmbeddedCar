@@ -1,0 +1,31 @@
+/*
+ * Device Tree Overlay para PWM Hardware - EmbeddedCar
+ * Habilita PWM0 en pin 12 (GPIO 12) para control de servo
+ */
+
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "brcm,bcm2835";
+
+    fragment@0 {
+        target = <&pwm>;
+        __overlay__ {
+            status = "okay";
+            pinctrl-names = "default";
+            pinctrl-0 = <&pwm0_pins>;
+        };
+    };
+
+    fragment@1 {
+        target = <&gpio>;
+        __overlay__ {
+            pwm0_pins: pwm0_pins {
+                brcm,pins = <12>;
+                brcm,function = <4>; /* ALT0 for PWM */
+                brcm,pull = <0>; /* No pull */
+            };
+        };
+    };
+};

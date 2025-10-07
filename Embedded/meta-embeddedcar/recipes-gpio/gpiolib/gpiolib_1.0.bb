@@ -4,8 +4,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 # Version information
-PV = "1.8"
-PR = "r2"
+PV = "2.0"
+PR = "r1"
 
 # Source location - usando archivos locales
 SRC_URI = "file://gpio_controller.c \

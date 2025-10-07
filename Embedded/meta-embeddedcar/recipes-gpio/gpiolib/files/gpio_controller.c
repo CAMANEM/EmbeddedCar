@@ -28,11 +28,33 @@ typedef struct {
 // Global variables
 volatile int running = 1;
 CarCommand last_command = {"stop", 0, "center"};
+char server_ip[16] = "192.168.0.122";  // IP por defecto, puede ser modificada por argumento
 
 // Signal handler for clean shutdown
 void signal_handler(int sig) {
     printf("\n🛑 Received signal %d, shutting down gracefully...\n", sig);
     running = 0;
+}
+
+// Validar formato básico de IP
+int is_valid_ip_format(const char *ip) {
+    int dots = 0;
+    int digit_count = 0;
+    
+    for (int i = 0; ip[i] != '\0'; i++) {
+        if (ip[i] == '.') {
+            if (digit_count == 0 || digit_count > 3) return 0; // No digits before dot or too many
+            dots++;
+            digit_count = 0;
+        } else if (ip[i] >= '0' && ip[i] <= '9') {
+            digit_count++;
+        } else {
+            return 0; // Invalid character
+        }
+    }
+    
+    // Should have exactly 3 dots and end with digits
+    return (dots == 3 && digit_count > 0 && digit_count <= 3);
 }
 
 // Parse JSON response and extract car command
@@ -83,7 +105,7 @@ int fetch_car_command(CarCommand *cmd) {
     
     // Build wget command with timeout and quiet mode
     snprintf(wget_command, sizeof(wget_command), 
-             "wget -q --timeout=2 --tries=1 \"http://192.168.0.122:3000/api/car/movement\" -O -");
+             "wget -q --timeout=2 --tries=1 \"http://%s:3000/api/car/movement\" -O -", server_ip);
     
     // Execute wget command and read output
     fp = popen(wget_command, "r");
@@ -135,10 +157,10 @@ void init_gpio_pins() {
     pinMode(PWM_MOTOR_RIGHT_1, OUTPUT);
     pinMode(PWM_MOTOR_RIGHT_2, OUTPUT);
     
-    // Initialize servo (software PWM)
-    servoSoftInit(PWM_SERVO, 50);  // Pin 12, 50Hz
+    // Initialize servo (hardware PWM) - MEJOR PARA SERVOS
+    servoInit(PWM_SERVO);  // Pin 12, PWM hardware
     
-    printf("✅ Servo pin %d configured for software PWM\n", PWM_SERVO);
+    printf("✅ Servo pin %d configured for HARDWARE PWM (mejor precision)\n", PWM_SERVO);
     
     // Initialize all LEDS to OFF
     digitalWrite(LED_FORWARD_LEFT, LOW);
@@ -297,19 +319,19 @@ void stop_all() {
     softPwmUpdateDuty(PWM_MOTOR_RIGHT_2, 0);
 }
 
-// Control servo dirección con ángulos específicos (65° a 115°) usando PWM software
+// Control servo dirección con ángulos específicos (65° a 115°) usando PWM HARDWARE
 void set_steering_direction(const char* direction) {
     if (strcmp(direction, "left") == 0) {
         // Girar a la izquierda (65°)
-        servoSoftWriteLimited(PWM_SERVO, 65, 65, 115);
+        servoWriteLimited(PWM_SERVO, 65, 65, 115);
         printf("🎯 Servo dirección: IZQUIERDA (65°)\n");
     } else if (strcmp(direction, "right") == 0) {
         // Girar a la derecha (115°)
-        servoSoftWriteLimited(PWM_SERVO, 115, 65, 115);
+        servoWriteLimited(PWM_SERVO, 115, 65, 115);
         printf("🎯 Servo dirección: DERECHA (115°)\n");
     } else {
         // Centro (90°)
-        servoSoftWriteLimited(PWM_SERVO, 90, 65, 115);
+        servoWriteLimited(PWM_SERVO, 90, 65, 115);
         printf("🎯 Servo dirección: CENTRO (90°)\n");
     }
 }
@@ -330,8 +352,8 @@ void execute_car_command(const CarCommand *cmd) {
             blinkStart(LED_FORWARD_LEFT, 2, 3); // Blink left LED to indicate turn
             blinkStart(LED_BACKWARD_LEFT, 2, 3); // Blink left LED to indicate turn
             
-            softPwmUpdateDuty(PWM_MOTOR_LEFT_1, cmd->speed);
-            softPwmUpdateDuty(PWM_MOTOR_LEFT_2, 0);
+            softPwmUpdateDuty(PWM_MOTOR_LEFT_1, 0);
+            softPwmUpdateDuty(PWM_MOTOR_LEFT_2, cmd->speed);
             softPwmUpdateDuty(PWM_MOTOR_RIGHT_1, cmd->speed);
             softPwmUpdateDuty(PWM_MOTOR_RIGHT_2, 0);
             
@@ -343,8 +365,8 @@ void execute_car_command(const CarCommand *cmd) {
 
             softPwmUpdateDuty(PWM_MOTOR_LEFT_1, cmd->speed);
             softPwmUpdateDuty(PWM_MOTOR_LEFT_2, 0);
-            softPwmUpdateDuty(PWM_MOTOR_RIGHT_1, cmd->speed);
-            softPwmUpdateDuty(PWM_MOTOR_RIGHT_2, 0);
+            softPwmUpdateDuty(PWM_MOTOR_RIGHT_1, 0);
+            softPwmUpdateDuty(PWM_MOTOR_RIGHT_2, cmd->speed);
         } else {
             // Forward straight
             digitalWrite(LED_FORWARD_LEFT, HIGH);
@@ -361,8 +383,8 @@ void execute_car_command(const CarCommand *cmd) {
             blinkStart(LED_BACKWARD_LEFT, 2, 3); // Blink left LED to indicate turn
             blinkStart(LED_FORWARD_LEFT, 2, 3); // Blink left LED to indicate turn
 
-            softPwmUpdateDuty(PWM_MOTOR_LEFT_1, 0);
-            softPwmUpdateDuty(PWM_MOTOR_LEFT_2, cmd->speed);
+            softPwmUpdateDuty(PWM_MOTOR_LEFT_1, cmd->speed);
+            softPwmUpdateDuty(PWM_MOTOR_LEFT_2, 0);
             softPwmUpdateDuty(PWM_MOTOR_RIGHT_1, 0);
             softPwmUpdateDuty(PWM_MOTOR_RIGHT_2, cmd->speed);
 
@@ -373,8 +395,8 @@ void execute_car_command(const CarCommand *cmd) {
 
             softPwmUpdateDuty(PWM_MOTOR_LEFT_1, 0);
             softPwmUpdateDuty(PWM_MOTOR_LEFT_2, cmd->speed);
-            softPwmUpdateDuty(PWM_MOTOR_RIGHT_1, 0);
-            softPwmUpdateDuty(PWM_MOTOR_RIGHT_2, cmd->speed);
+            softPwmUpdateDuty(PWM_MOTOR_RIGHT_1, cmd->speed);
+            softPwmUpdateDuty(PWM_MOTOR_RIGHT_2, 0);
 
         } else {
             // Backward straight
@@ -444,10 +466,26 @@ void setup_timer() {
     printf("⏰ Timer set for 250ms intervals\n");
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     printf("🚗 Embedded Car GPIO Controller Starting...\n");
-    printf("🔥🔥🔥 V1.8 - SERVO SOFTWARE + BLINK FIX 🔥🔥🔥\n");
-    printf("🎯 Servo usa PWM software + Blinks no bloqueantes!\n");
+    printf("🔥🔥🔥 V2.0 - IP CONFIGURABLE 🔥🔥🔥\n");
+    printf("🎯 Hardware PWM servo + IP configurable por parametro!\n");
+    
+    // Procesar argumentos de línea de comandos
+    if (argc > 1) {
+        // Validar formato de IP básico
+        if (strlen(argv[1]) < sizeof(server_ip) && is_valid_ip_format(argv[1])) {
+            strncpy(server_ip, argv[1], sizeof(server_ip) - 1);
+            server_ip[sizeof(server_ip) - 1] = '\0';
+            printf("🌐 Usando IP del servidor: %s\n", server_ip);
+        } else {
+            printf("❌ Error: Formato de IP inválido '%s'. Usando IP por defecto: %s\n", argv[1], server_ip);
+            printf("💡 Formato esperado: xxx.xxx.xxx.xxx (ejemplo: 192.168.1.100)\n");
+        }
+    } else {
+        printf("🌐 Usando IP por defecto: %s\n", server_ip);
+        printf("📝 Uso: %s [IP_SERVIDOR] (ejemplo: %s 192.168.1.100)\n", argv[0], argv[0]);
+    }
     
     // Install signal handlers for clean shutdown
     signal(SIGINT, signal_handler);
@@ -465,7 +503,7 @@ int main() {
     setup_timer();
     
     printf("✅ Car controller initialized. Monitoring API every 250ms...\n");
-    printf("🌐 API Endpoint: http://192.168.0.122:3000/api/car/movement\n");
+    printf("🌐 API Endpoint: http://%s:3000/api/car/movement\n", server_ip);
     printf("📋 Press Ctrl+C to stop\n\n");
     
     // Main loop - just wait for signals
@@ -477,10 +515,10 @@ int main() {
     printf("\n🧹 Cleaning up...\n");
     stop_all();
     
-    // Detener servo software PWM y centrarlo
+    // Detener servo HARDWARE PWM y centrarlo
     set_steering_direction("center");
     usleep(500000); // Esperar 500ms para que alcance la posición
-    servoSoftStop(PWM_SERVO);
+    servoStop(PWM_SERVO);
     
     printf("✅ GPIO Controller stopped successfully\n");
     return 0;

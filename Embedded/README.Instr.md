@@ -125,7 +125,15 @@ cd usr/bin
 Ejecutar la aplicación:
 
 ```bash
-./video_streamer http://192.168.0.122:3000 10
+# Usar IP por defecto (192.168.0.122)
+./gpio_controller
+
+# Usar IP personalizada
+./gpio_controller 192.168.1.100
+./gpio_controller 10.0.0.50
+
+# Para transmision de video
+./gstreamer_controller start
 ```
 
 
