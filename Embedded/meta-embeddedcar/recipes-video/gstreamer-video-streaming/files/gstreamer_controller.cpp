@@ -36,16 +36,16 @@ public:
     
     bool startStreaming() {
         if (isStreaming()) {
-            std::cout << "⚠️  Streaming already active" << std::endl;
+            std::cout << "Streaming already active" << std::endl;
             return true;
         }
-        
-        std::cout << "🚀 Starting GStreamer video streaming..." << std::endl;
-        std::cout << "📱 Device: " << device << std::endl;
-        std::cout << "📐 Resolution: " << width << "x" << height << "@" << framerate << "fps" << std::endl;
-        std::cout << "🌐 Endpoint: " << host << ":" << port << std::endl;
-        std::cout << "🎨 Quality: " << quality << "%" << std::endl;
-        
+        /*
+        std::cout << "Starting GStreamer video streaming..." << std::endl;
+        std::cout << "Device: " << device << std::endl;
+        std::cout << "Resolution: " << width << "x" << height << "@" << framerate << "fps" << std::endl;
+        std::cout << "Endpoint: " << host << ":" << port << std::endl;
+        std::cout << "Quality: " << quality << "%" << std::endl;
+        */
         // Build GStreamer command
         std::string command = "gst-launch-1.0 v4l2src device=" + device +
                              " ! video/x-raw,width=" + std::to_string(width) +
@@ -56,7 +56,6 @@ public:
                              " ! tcpserversink host=" + host +
                              " port=" + std::to_string(port) + " sync=false";
         
-        std::cout << "🔧 Pipeline: " << command << std::endl;
         
         // Fork and exec GStreamer
         gstreamer_pid = fork();
@@ -67,7 +66,7 @@ public:
             exit(1);
         } else if (gstreamer_pid > 0) {
             // Parent process
-            std::cout << "✅ GStreamer started with PID: " << gstreamer_pid << std::endl;
+            //std::cout << "GStreamer started with PID: " << gstreamer_pid << std::endl;
             
             // Save PID to file
             std::ofstream pidFile("/tmp/gstreamer_video.pid");
@@ -85,16 +84,16 @@ public:
     
     bool stopStreaming() {
         if (!isStreaming()) {
-            std::cout << "⚠️  Streaming not active" << std::endl;
+            //std::cout << "Streaming not active" << std::endl;
             return true;
         }
         
-        std::cout << "🛑 Stopping GStreamer video streaming..." << std::endl;
+        //std::cout << "Stopping GStreamer video streaming..." << std::endl;
         
         if (gstreamer_pid > 0) {
             // Send SIGTERM for graceful shutdown
             if (kill(gstreamer_pid, SIGTERM) == 0) {
-                std::cout << "📡 Sent SIGTERM to PID " << gstreamer_pid << std::endl;
+                //std::cout << "Sent SIGTERM to PID " << gstreamer_pid << std::endl;
                 
                 // Wait for process to terminate
                 int status;
@@ -114,7 +113,7 @@ public:
                 }
                 
                 gstreamer_pid = -1;
-                std::cout << "✅ Streaming stopped" << std::endl;
+                std::cout << "Streaming stopped" << std::endl;
                 
                 // Remove PID file
                 unlink("/tmp/gstreamer_video.pid");
@@ -153,11 +152,11 @@ public:
     }
     
     void getStatus() {
-        std::cout << "🎥 GStreamer Video Streaming Status" << std::endl;
+        std::cout << "GStreamer Video Streaming Status" << std::endl;
         std::cout << "================================" << std::endl;
         
         if (isStreaming()) {
-            std::cout << "Status: ✅ RUNNING (PID: " << gstreamer_pid << ")" << std::endl;
+            std::cout << "Status: RUNNING (PID: " << gstreamer_pid << ")" << std::endl;
             std::cout << "Endpoint: tcp://" << host << ":" << port << std::endl;
             std::cout << "Device: " << device << std::endl;
             std::cout << "Resolution: " << width << "x" << height << "@" << framerate << "fps" << std::endl;
@@ -169,7 +168,7 @@ public:
 };
 
 void showUsage(const char* program) {
-    std::cout << "🎥 GStreamer Video Streaming Controller" << std::endl;
+    std::cout << "GStreamer Video Streaming Controller" << std::endl;
     std::cout << "Usage: " << program << " [command] [options]" << std::endl;
     std::cout << std::endl;
     std::cout << "Commands:" << std::endl;

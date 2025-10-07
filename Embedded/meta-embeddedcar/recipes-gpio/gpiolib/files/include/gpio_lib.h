@@ -8,19 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 
-/**
- * @file gpio_lib.h
- * @brief Biblioteca GPIO para Raspberry Pi con soporte para PWM hardware
- * @author EmbeddedCar Project
- * @version 1.0
- * 
- * Esta biblioteca proporciona funciones para controlar los pines GPIO de la
- * Raspberry Pi, incluyendo operaciones digitales básicas y PWM hardware.
- * 
- * Pines PWM soportados: 12, 13, 18, 19 (usando PWM0 hardware)
- * - Pin 12, 18: PWM0 canal 0
- * - Pin 13, 19: PWM0 canal 1
- */
+
 
 // Pin modes
 typedef enum {

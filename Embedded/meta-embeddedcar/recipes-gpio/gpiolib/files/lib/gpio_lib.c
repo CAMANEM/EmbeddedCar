@@ -44,7 +44,6 @@ int pinMode(int pin, Mode_t mode) {
         } else if (pin == 14 || pin == 15) {
             snprintf(cmd, sizeof(cmd), "raspi-gpio set %d a0", pin); // PWM1 (diferentes chip)
         } else {
-            printf("⚠️ Warning: Pin %d may not support hardware PWM\n", pin);
             snprintf(cmd, sizeof(cmd), "raspi-gpio set %d a0", pin);
         }
     } else if (mode == SOFT_PWM) {

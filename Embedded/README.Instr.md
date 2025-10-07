@@ -172,7 +172,7 @@ curl -X POST http://localhost:3000/api/camera/udp/start
 
 http://localhost:3000/gstreamer_video.html
 
-Faltan de agregar para instalacion al readme:
+Faltan de agregar para instalacion al readme (web):
 
 ```bash
 comando para instalar node js (busacar en internet)
@@ -181,27 +181,24 @@ $ npm install multer
 $ npm install http-proxy-middleware
 ```
 
+Debug de video (gstreamer_controller) y gpio (gppio_controller)
 
-# Después de flashear la nueva imagen:
-ls -la /sys/class/pwm/
-# Debería mostrar: pwmchip0/
+```bash
+# Ver status del servicio
+$ systemctl status gpio-controller
 
-ls -la /sys/class/pwm/pwmchip0/
-# Debería permitir: export, unexport, npwm, etc.
+# Ver logs en tiempo real:
+$ journalctl -u gpio-controller -f
 
-Recordar aumentar la version en los .bb de la receta donde este trabajando codigo. Y por si acaso el rpi-embeddedcar-image.bb  por si acaso porque parece que no se estan tomando los cambios
+# Ver logs históricos:
+$ journalctl -u gpio-controller
 
-Para mejorar tiempos se puede compilar solo la receta nueva y cargar:
+# Reiniciar el servicio:
+$ systemctl restart gpio-controller
 
-cd /home/camanem/EmbeddedCar/Embedded/rpi4
+# Detener el servicio:
+$ systemctl stop gpio-controller
 
-# Compilar solo la biblioteca actualizada (mucho más rápido)
-bitbake gpiolib
-
-# O compilar toda la imagen con la nueva versión
-bitbake rpi4-embeddedcar-image
-
-# Después de bitbake gpiolib, el nuevo binario estará en:
-# tmp/work/raspberrypi4-embeddedcar-poky-linux-gnueabi/gpiolib/1.0-r5/image/usr/bin/gpio_controller
-
-# Puedes copiarlo directamente a tu RPi sin regenerar toda la imagen
+# Reiniciar el servicio 
+$ systemctl start gpio-controller
+```
