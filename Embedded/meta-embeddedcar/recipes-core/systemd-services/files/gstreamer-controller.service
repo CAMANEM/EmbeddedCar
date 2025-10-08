@@ -1,0 +1,25 @@
+[Unit]
+Description=EmbeddedCar GStreamer Video Controller
+After=network-online.target gpio-controller.service
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/gstreamer_controller start
+Restart=always
+RestartSec=10
+User=root
+Environment=HOME=/root
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gstreamer_controller
+
+# Reiniciar si falla
+KillMode=process
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
