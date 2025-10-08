@@ -48,6 +48,7 @@ buildtools/
 !meta-yocto-bsp
 !meta-yocto-imported
 !meta-raspberrypi
+!meta-openembedded
 !/Embedded/meta-skeleton
 !/Embedded/meta-selftest
 !/Embedded/meta-poky
@@ -55,6 +56,7 @@ buildtools/
 !/Embedded/meta-yocto-bsp
 !/Embedded/meta-yocto-imported
 !/Embedded/meta-raspberrypi
+!/Embedded/meta-openembedded
 !/Embedded/meta-embeddedcar
 
 # Image build files
