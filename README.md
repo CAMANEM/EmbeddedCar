@@ -99,10 +99,10 @@ This project contains the development environment for an embedded car system, or
 │  │Yocto Linux  │  │   Drivers    │  │      Hardware       │ │
 │  │             │  │              │  │                     │ │
 │  │ • Custom    │  │ • GPIO       │  │ • DC Motors         │ │
-│  │   Build     │  │ • I2C        │  │ • Servo Motors      │ │
-│  │ • Minimal   │  │ • SPI        │  │ • Camera Module     │ │
-│  │   Kernel    │  │ • Camera     │  │ • Sensors           │ │
-│  │ • Network   │  │   (V4L2)     │  │ • Power Management  │ │
+│  │   Build     │  │ • Camera     │  │ • Servo Motors      │ │
+│  │ • Minimal   │  │ • (gstreamer)│  │ • Camera Module     │ │
+│  │   Kernel    │  │              │  │ • Power Management  │ │
+│  │ • Network   │  │              │  │                     │ │
 │  │   Stack     │  │              │  │                     │ │
 │  └─────────────┘  └──────────────┘  └─────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
@@ -162,7 +162,6 @@ The system maintains real-time feedback through a continuous monitoring cycle:
 - **HTTP/HTTPS**: Primary communication protocol between the frontend and backend
 - **WebSocket**: For real-time video streaming and continuous status updates
 - **GPIO Protocol**: Direct hardware communication on the Raspberry Pi
-- **I2C/SPI**: For communication with sensors and advanced hardware features
 
 
 ##  Key Features
