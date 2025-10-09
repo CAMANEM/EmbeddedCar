@@ -410,7 +410,11 @@ Then, inside your web frontend directory (e.g., `WebInterface/`):
 
 ```bash
 cd WebInterface/
-npm install
+$ npm install
+$ npm install angular
+$ npm install multer
+$ npm install http-proxy-middleware
+
 ```
 
 This will install all necessary dependencies for web development.
