@@ -1,0 +1,62 @@
+<div class="login-bg">
+  <div class="login-card">
+    <h2>Car Controller Login</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <div class="input-group">
+        <span class="icon">👤</span>
+        <input 
+          id="username" 
+          formControlName="username" 
+          type="text" 
+          placeholder="Username" 
+          [class.error]="loginForm.get('username')?.touched && loginForm.get('username')?.errors"
+        >
+      </div>
+      <div class="error-message" *ngIf="usernameError">
+        {{ usernameError }}
+      </div>
+      
+      <div class="input-group">
+        <span class="icon">🔒</span>
+        <input 
+          id="password" 
+          formControlName="password" 
+          type="password" 
+          placeholder="Password"
+          [class.error]="loginForm.get('password')?.touched && loginForm.get('password')?.errors"
+        >
+      </div>
+      <div class="error-message" *ngIf="passwordError">
+        {{ passwordError }}
+      </div>
+      
+      <div class="options">
+        <label><input type="checkbox" name="remember"> Remember me</label>
+        <a href="#" class="forgot">Forgot password?</a>
+      </div>
+      
+      <button 
+        type="submit" 
+        class="login-btn" 
+        [disabled]="!loginForm.valid || isLoading"
+        [class.loading]="isLoading"
+      >
+        {{ isLoading ? 'Logging in...' : 'Login' }}
+      </button>
+
+      <!-- Demo login button for testing -->
+      <button 
+        type="button" 
+        class="demo-btn" 
+        (click)="onDemoLogin()"
+        [disabled]="isLoading"
+      >
+        Demo Login (admin/admin)
+      </button>
+
+      <div class="error-message main-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+    </form>
+  </div>
+</div>
