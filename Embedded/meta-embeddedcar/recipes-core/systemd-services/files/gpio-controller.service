@@ -1,0 +1,25 @@
+[Unit]
+Description=EmbeddedCar GPIO Controller
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/gpio_controller
+Restart=always
+RestartSec=10
+User=root
+Environment=HOME=/root
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gpio_controller
+
+# Reiniciar si falla
+KillMode=process
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

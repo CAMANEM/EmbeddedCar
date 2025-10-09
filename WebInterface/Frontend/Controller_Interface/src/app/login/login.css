@@ -1,0 +1,86 @@
+.login-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(30,60,114,0.2);
+  padding: 40px 30px;
+  width: 350px;
+  text-align: center;
+}
+
+.login-card h2 {
+  margin-bottom: 24px;
+  color: #1e3c72;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+  background: #e3eafc;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.input-group .icon {
+  font-size: 1.2em;
+  margin-right: 8px;
+  color: #1e3c72;
+}
+
+.input-group input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 1em;
+  padding: 6px 0;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95em;
+  margin-bottom: 18px;
+}
+
+.options .forgot {
+  color: #2a5298;
+  text-decoration: none;
+}
+
+.login-btn {
+  width: 100%;
+  background: #1e3c72;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 1.1em;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: background 0.2s;
+}
+
+.login-btn:hover {
+  background: #2a5298;
+}
+
+.create-account a {
+  color: #1e3c72;
+  text-decoration: none;
+  font-size: 0.95em;
+}
+
+.error {
+  color: #d32f2f;
+  margin-top: 10px;
+}
