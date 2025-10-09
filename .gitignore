@@ -11,6 +11,13 @@
 # Build directories
 /build*/
 /Embedded/build*/
+/Embedded/rpi4/build*/
+/Embedded/rpi4/cache/*
+/Embedded/rpi4/tmp/*
+/Embedded/rpi4/sstate-cache/*
+/Embedded/rpi4/bitbake-cookerdaemon.log
+/GPIO_library/build*/
+
 
 # Python shell tables
 pyshtables.py
@@ -40,12 +47,17 @@ buildtools/
 !meta-yocto
 !meta-yocto-bsp
 !meta-yocto-imported
+!meta-raspberrypi
+!meta-openembedded
 !/Embedded/meta-skeleton
 !/Embedded/meta-selftest
 !/Embedded/meta-poky
 !/Embedded/meta-yocto
 !/Embedded/meta-yocto-bsp
 !/Embedded/meta-yocto-imported
+!/Embedded/meta-raspberrypi
+!/Embedded/meta-openembedded
+!/Embedded/meta-embeddedcar
 
 # Image build files
 hob-image-*.bb

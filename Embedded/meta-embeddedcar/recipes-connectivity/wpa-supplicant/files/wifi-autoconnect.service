@@ -1,0 +1,13 @@
+[Unit]
+Description=WiFi Auto Connect
+After=multi-user.target
+Wants=wpa_supplicant@wlan0.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'ip link set wlan0 up && sleep 2 && systemctl start wpa_supplicant@wlan0.service && sleep 5 && systemctl start dhcpcd@wlan0.service'
+ExecStop=/bin/sh -c 'systemctl stop dhcpcd@wlan0.service && systemctl stop wpa_supplicant@wlan0.service && ip link set wlan0 down'
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+[submodule "Embedded/meta-raspberrypi"]
+	path = Embedded/meta-raspberrypi
+	url = https://github.com/agherzan/meta-raspberrypi.git
+[submodule "Embedded/meta-openembedded"]
+	path = Embedded/meta-openembedded
+	url = https://git.openembedded.org/meta-openembedded
+	branch = scarthgap
