@@ -137,50 +137,6 @@ Ejecutar la aplicación:
 ```
 
 
-# Test directo sin programa
-```bash
-# Test directo sin programa
-gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=640,height=480,framerate=30/1 ! videoconvert ! videoscale ! video/x-raw,width=320,height=240 ! jpegenc quality=20 ! multipartmux boundary="--videoboundary" ! curlhttpsink location="http://192.168.0.122:3000/api/video/stream"
-```
-
-
-# Stream directo al API
-./video_streamer http://192.168.0.122:3000/api/video/stream fast 320x240
-
-# O para frames individuales
-./video_streamer http://192.168.0.122:3000/api/video/frame fast 320x240
-
-
-./video_streamer_simple http://192.168.0.122:3000/api/video/stream fast 5
-./video_streamer_simple http://192.168.0.122:3000/api/video/stream fast 20
-
-./video_streamer_simple http://192.168.0.122:3000/api/video/stream medium 10
-
-./mjpeg_streamer 8080 50 15
-
-http://192.168.0.122:3000/mjpeg_direct.html
-
-./mjpeg_streamer 8080 50 15
-
-
-curl -X POST http://localhost:3000/api/camera/udp/start -H "Content-Type: application/json" -d '{"port": 5000}'
-
-curl -X POST http://localhost:3000/api/camera/udp/start
-
-curl -X POST http://localhost:3000/api/camera/udp/start
-
-
-http://localhost:3000/gstreamer_video.html
-
-Faltan de agregar para instalacion al readme (web):
-
-```bash
-comando para instalar node js (busacar en internet)
-$ npm install angular
-$ npm install multer
-$ npm install http-proxy-middleware
-```
-
 Debug de video (gstreamer_controller) y gpio (gppio_controller)
 
 ```bash
