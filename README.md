@@ -389,6 +389,7 @@ build-essential chrpath socat cpio python3 python3-pip python3-pexpect
 xz-utils debianutils iputils-ping python3-git python3-jinja2 python3-subunit
 zstd liblz4-tool file locales libacl1
 ```
+Or you can use the `yocto_setup_and_test.sh` in the main directory to automatically the basic dependencies for this Yocto project.
 
 Refer to the [official Yocto documentation](https://docs.yoctoproject.org/current/brief-yoctoprojectqs/index.html#packages) for more details and supported operating systems.
 
@@ -435,12 +436,13 @@ To set up the embedded development environment:
    source oe-init-build-env
    ```
 
-3. Configure your build in the `conf/` directory that gets created
+3. Build the image for Raspberry Pi 4:
 
-4. Start building:
-   ```bash
-   bitbake core-image-minimal
-   ```
+`bitbake rpi4-embeddedcar-image`
+
+You can see the full deteiled instructions in the [README.Instr.md](Embedded/README.Instr.md)
+
+
 ### Web Development
 
 ## Setup Instructions for New Developers
